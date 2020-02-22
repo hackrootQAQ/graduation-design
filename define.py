@@ -46,7 +46,7 @@ class Comment(object):
                     s = eval(self.content)
                     return True
                 except Exception as e:
-                    print(self.content)
+                    print("\n{}".format(self.content))
                     return False
         return True
 
