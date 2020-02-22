@@ -40,14 +40,11 @@ class Comment(object):
                 if len(s) == 13: self.content = s[5]
                 return True
             except Exception as e:
-                self.content = self.content.replace("[", "")
-                self.content = self.content.replace("]", "")
-                try:
-                    s = eval(self.content)
-                    return True
-                except Exception as e:
+                if "\"" in self.content: 
                     print("\n{}".format(self.content))
                     return False
+        self.content = self.content.replace("]", "")
+        self.content = self.content.replace("[", "")
         return True
 
 class tightComment(object):
