@@ -37,7 +37,7 @@ def fetch_vedio(L1, L2):
     print("Get {} vedios under ({}, {})...".format(str(n), L1, L2))
     tot = n
     p = 1
-    h = define.MyHeap(_k = 10000) 
+    h = define.myHeap(_k = 10000) 
     while n > 0:
         url = gen_vedio_url(L2, pn = p, ps = min(n, 50))
         n, p = n - 50, p + 1
