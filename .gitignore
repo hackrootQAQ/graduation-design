@@ -1,0 +1,5 @@
+data/comment/
+paper/
+__pycache__/
+*.txt
+test.py
