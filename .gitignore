@@ -1,5 +1,6 @@
-data/comment/
+data/
 paper/
 __pycache__/
 *.txt
 test.py
+chinese_L-12_H-768_A-12/

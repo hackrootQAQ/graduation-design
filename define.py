@@ -62,7 +62,7 @@ class tightComment(object):
         self.st = min(self.st, c.time)
         self.ed = max(self.ed, c.time)
         return self
-
+        
 class myHeap(object):
     def __init__(self, _k = 10000):
         self.k = _k
@@ -175,6 +175,11 @@ class Page(object):
     @printAllMember
     def print(self, file):
         pass
-        
+
+class PageLite(object):
+    def __init__(self, _clist, _label = None):
+        self.label = _label
+        self.clist = _clist
+
 if __name__ == "__main__":
     pass

@@ -1,5 +1,4 @@
-import pickle
-import define
+import fetch_avnumber
 
 ## reference: https://github.com/uupers/BiliSpider/wiki/%E8%A7%86%E9%A2%91%E5%88%86%E5%8C%BA%E5%AF%B9%E5%BA%94%E8%A1%A8
 relational_table = {
@@ -17,19 +16,9 @@ relational_table = {
     181 : [182, 183, 85, 184, 86],
 }
 
-def get_msg(p1, p2, wf):
-    path = "./data/msg/{}/{}".format(str(p1), str(p2))
-    with open(path, "rb") as f:
-        vedio_msg = pickle.load(f)
-    cnt = 0
-    for vedio in vedio_msg:
-        cnt = max(cnt, vedio.danmaku)
-    return cnt
-
 if __name__ == "__main__":
     cnt = 0
     for L1, L2 in relational_table.items():
         for L in L2:
-            with open("./theMsg.txt", "w", encoding = "utf-8") as f:
-                cnt = max(get_msg(L1, L, f), cnt)
-            print(cnt)
+            cnt += fetch_avnumber.fetch_vedio_amount(L)
+    print(cnt)
