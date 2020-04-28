@@ -44,8 +44,7 @@ def res_block(input, input_channel_num, output_channel_num, name, downsize = Fal
 
 def get_sentences_vector(batch_size = batch_size, D = None):
     G = databatch.get_batch(batch_size, D)
-    print(len(D))
-
+    
     while True:
         tmp = next(G)
         x, y = [], []
