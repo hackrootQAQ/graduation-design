@@ -111,7 +111,7 @@ if __name__ == "__main__":
             X = X.reshape([-1, num_comment, embedding_size, 1])
         except:
             with open("wrong_data.txt", "w") as f:
-                f.write(fr)
+                f.write(str(fr))
         l, a, _ = sess.run(
             [loss, acc, train_op],
             feed_dict = {input_X : X, input_Y : Y}
