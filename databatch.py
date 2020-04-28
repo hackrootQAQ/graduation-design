@@ -100,6 +100,7 @@ def cut_two_parts():
     for L1, L2 in relational_table.items():
         fn = get_filename(L1)
         D.extend([(L1, f) for f in fn])
+    random.shuffle(D)
     num = len(D) // 11
     return D[:-num], D[-num:]    
 
