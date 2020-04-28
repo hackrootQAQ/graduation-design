@@ -110,14 +110,14 @@ def get_batch(batch_size = batch_size, D = None):
     random.shuffle(P)
     now = 0
     while True:
-        ret = []
+        ret = []; fr = []
         for i in range(batch_size):
-            L1, f = D[P[now]]
+            L1, f = D[P[now]]; fr.append(D)
             tmpC, tmpL = get_comment(L1, f)
             ret.append((zoom(tmpC, sz), m[L1]))
             now = now + 1
             if now >= len(D): now = 0
-        yield ret 
+        yield ret, fr
 
 def print_sz_0():
     len_list = []

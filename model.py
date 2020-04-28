@@ -4,7 +4,7 @@ from bert_serving.client import BertClient
 import define
 import numpy as np
 
-batch_size = 128
+batch_size = 64
 embedding_size = 768
 num_comment = 768
 num_classes = 12
@@ -46,7 +46,7 @@ def get_sentences_vector(batch_size = batch_size, D = None):
     G = databatch.get_batch(batch_size, D)
     
     while True:
-        tmp = next(G)
+        tmp, fr = next(G)
         x, y = [], []
         for items in tmp:
             y.append(items[1])
@@ -54,7 +54,7 @@ def get_sentences_vector(batch_size = batch_size, D = None):
             for i in range(len(sens)): 
                 if sens[i] is None: sens[i] == "23333"
             x.append(bc.encode(sens))
-        yield x, y
+        yield x, y, fr
 
 if __name__ == "__main__":
     input_X = tf.placeholder(tf.float32, 
@@ -105,9 +105,13 @@ if __name__ == "__main__":
 
     for step in range(max_steps):
         S_train = get_sentences_vector(batch_size = batch_size, D = train_D)
-        X, Y = next(S_train)
+        X, Y, fr = next(S_train)
         X = np.array(X)
-        X = X.reshape([-1, num_comment, embedding_size, 1])
+        try:
+            X = X.reshape([-1, num_comment, embedding_size, 1])
+        except:
+            with open("wrong_data.txt", "w") as f:
+                f.write(fr)
         l, a, _ = sess.run(
             [loss, acc, train_op],
             feed_dict = {input_X : X, input_Y : Y}
