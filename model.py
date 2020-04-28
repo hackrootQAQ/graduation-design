@@ -106,8 +106,8 @@ if __name__ == "__main__":
     for step in range(max_steps):
         S_train = get_sentences_vector(batch_size = batch_size, D = train_D)
         X, Y, fr = next(S_train)
-        X = np.array(X)
         try:
+            X = np.array(X)
             X = X.reshape([-1, num_comment, embedding_size, 1])
         except:
             with open("wrong_data.txt", "w") as f:
@@ -122,8 +122,8 @@ if __name__ == "__main__":
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // batch_size):
                 X, Y, fr = next(S_test)
-                X = np.array(X)
                 try:
+                    X = np.array(X)
                     X = X.reshape([-1, num_comment, embedding_size, 1])
                 except: 
                     with open("wrong_data.txt", "w") as f:
