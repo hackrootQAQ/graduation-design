@@ -10,6 +10,7 @@ num_comment = 768
 num_classes = 12
 max_steps = 10000
 lr = 1e-3
+bc = BertClient(check_length = False)
 
 def init_w(s, name = None):
     return tf.Variable(tf.truncated_normal(shape = s, stddev = 0.1), name = name)
@@ -41,9 +42,9 @@ def res_block(input, input_channel_num, output_channel_num, name, downsize = Fal
             h_c2_relu = tf.nn.relu6(h_c2_add, name = "h_c2_relu")
         return h_c2_relu
 
-def get_sentences_vector(batch_size = batch_size):
-    G = databatch.get_batch(batch_size)
-    bc = BertClient(check_length = False)
+def get_sentences_vector(batch_size = batch_size, D = None):
+    G = databatch.get_batch(batch_size, D)
+    print(len(D))
 
     while True:
         tmp = next(G)
@@ -101,14 +102,29 @@ if __name__ == "__main__":
     tf.global_variables_initializer().run()
     tf.train.start_queue_runners()
     
+    train_D, test_D = databatch.cut_two_parts()
+
     for step in range(max_steps):
-        S = get_sentences_vector()
-        X, Y = next(S)
+        S_train = get_sentences_vector(batch_size = batch_size, D = train_D)
+        X, Y = next(S_train)
         X = np.array(X)
-        try:
-            X = X.reshape([-1, num_comment, embedding_size, 1])
-        except:
-            continue
-        l, a, _ = sess.run([loss, acc, train_op],
-            feed_dict = {input_X : X, input_Y : Y})
-        print('step %d, loss %.4f, acc %.4f' % (step, l, a))
+        X = X.reshape([-1, num_comment, embedding_size, 1])
+        l, a, _ = sess.run(
+            [loss, acc, train_op],
+            feed_dict = {input_X : X, input_Y : Y}
+        )
+        print("step %d, loss %.4f, acc %.4f" % (step, l, a))
+        if step % 100 == 0 and step > 0:
+            S_test = get_sentences_vector(batch_size = batch_size, D = test_D)
+            predict_a, predict_l = 0, 0
+            for i in range(len(test_D) // batch_size):
+                X, Y = next(S_test)
+                X = np.array(X)
+                X = X.reshape([-1, num_comment, embedding_size, 1])
+                l, a = sess.run(
+                    [loss, acc],
+                    feed_dict = {input_X : X, input_Y : Y}
+                )
+                predict_a += a; predict_l += l
+            num = (len(test_D) // batch_size) * batch_size
+            print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))

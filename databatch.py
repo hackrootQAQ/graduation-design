@@ -35,14 +35,14 @@ m = {
 batch_size = 10
 
 def get_comment(p1, p2):
-    path = "./data/comment/{}/{}".format(str(p1), str(p2))
+    path = "./data/comment_new/{}/{}".format(str(p1), str(p2))
     with open(path, "rb") as f:
         comment = pickle.load(f)
     #print(comment.clist[0].content)
-    return (comment.clist, comment.clen)
+    return (comment.clist, len(comment.clist))
 
 def get_filename(p1):
-    path = "./data/comment/{}".format(str(p1))
+    path = "./data/comment_new/{}".format(str(p1))
     for r, d, f in os.walk(path):
         return f
 
@@ -95,25 +95,28 @@ def zoom(urtext, sz):
     if len(urtext) < sz: return expansion(urtext, sz)
     else: return lessen(urtext, sz)
 
-sz = 768 
-def get_batch(batch_size = batch_size):
+def cut_two_parts():
     D = []
     for L1, L2 in relational_table.items():
         fn = get_filename(L1)
-        for f in fn: D.append((L1, f))
+        D.extend([(L1, f) for f in fn])
+    num = len(D) // 11
+    return D[:-num], D[-num:]    
+
+sz = 768
+def get_batch(batch_size = batch_size, D = None):
     P = [i for i in range(len(D))]
     random.shuffle(P)
     now = 0
     while True:
         ret = []
         for i in range(batch_size):
-            L1, f = D[P[now]][0], D[P[now]][1]
+            L1, f = D[P[now]]
             tmpC, tmpL = get_comment(L1, f)
-            tmpC = [x for x in tmpC if len(x.content) > 1]
             ret.append((zoom(tmpC, sz), m[L1]))
             now = now + 1
             if now >= len(D): now = 0
-        yield ret    
+        yield ret 
 
 def print_sz_0():
     len_list = []
