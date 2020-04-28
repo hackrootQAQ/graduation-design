@@ -121,9 +121,13 @@ if __name__ == "__main__":
             S_test = get_sentences_vector(batch_size = batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // batch_size):
-                X, Y = next(S_test)
+                X, Y, fr = next(S_test)
                 X = np.array(X)
-                X = X.reshape([-1, num_comment, embedding_size, 1])
+                try:
+                    X = X.reshape([-1, num_comment, embedding_size, 1])
+                except: 
+                    with open("wrong_data.txt", "w") as f:
+                        f.write(str(fr))
                 l, a = sess.run(
                     [loss, acc],
                     feed_dict = {input_X : X, input_Y : Y}
