@@ -106,32 +106,36 @@ if __name__ == "__main__":
     for step in range(max_steps):
         S_train = get_sentences_vector(batch_size = batch_size, D = train_D)
         X, Y, fr = next(S_train)
+        
         try:
             X = np.array(X)
             X = X.reshape([-1, num_comment, embedding_size, 1])
+            l, a, _ = sess.run(
+                [loss, acc, train_op],
+                feed_dict = {input_X : X, input_Y : Y}
+            )
         except:
             with open("wrong_data.txt", "w") as f:
                 f.write(str(fr))
-        l, a, _ = sess.run(
-            [loss, acc, train_op],
-            feed_dict = {input_X : X, input_Y : Y}
-        )
+        
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         if step % 100 == 0 and step > 0:
             S_test = get_sentences_vector(batch_size = batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // batch_size):
                 X, Y, fr = next(S_test)
+                
                 try:
                     X = np.array(X)
                     X = X.reshape([-1, num_comment, embedding_size, 1])
+                    l, a = sess.run(
+                        [loss, acc],
+                        feed_dict = {input_X : X, input_Y : Y}
+                    )
+                    predict_a += a; predict_l += l
                 except: 
                     with open("wrong_data.txt", "w") as f:
                         f.write(str(fr))
-                l, a = sess.run(
-                    [loss, acc],
-                    feed_dict = {input_X : X, input_Y : Y}
-                )
-                predict_a += a; predict_l += l
+                
             num = (len(test_D) // batch_size) * batch_size
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
