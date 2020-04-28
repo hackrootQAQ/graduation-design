@@ -32,7 +32,6 @@ m = {
     5   : 10,
     181 : 11,
 }
-batch_size = 10
 
 def get_comment(p1, p2):
     path = "./data/comment_new/{}/{}".format(str(p1), str(p2))
@@ -95,17 +94,16 @@ def zoom(urtext, sz):
     if len(urtext) < sz: return expansion(urtext, sz)
     else: return lessen(urtext, sz)
 
-def cut_two_parts():
+def cut_two_parts(test_size):
     D = []
     for L1, L2 in relational_table.items():
         fn = get_filename(L1)
         D.extend([(L1, f) for f in fn])
     random.shuffle(D)
-    num = len(D) // 11
-    return D[:-num], D[-num:]    
+    return D[:-test_size], D[-test_size:]    
 
 sz = 768
-def get_batch(batch_size = batch_size, D = None):
+def get_batch(batch_size, D = None):
     P = [i for i in range(len(D))]
     random.shuffle(P)
     now = 0

@@ -3,13 +3,23 @@ import databatch
 from bert_serving.client import BertClient
 import define
 import numpy as np
+import json
 
-batch_size = 64
-embedding_size = 768
-num_comment = 768
-num_classes = 12
-max_steps = 50000
-lr = 1e-3
+class CONFIG(object):
+    def __init__(self):
+        with open("config.json", "r") as f:
+            config_dic = json.load(f)
+        self.batch_size = config_dic["batch_size"]
+        self.embedding_size = config_dic["embedding_size"]
+        self.num_comment = config_dic["num_comment"]
+        self.num_class = config_dic["num_class"]
+        self.lr_base = config_dic["lr_base"]
+        self.lr_decay = config_dic["lr_decay"]
+        self.lr_step = config_dic["lr_step"]
+        self.max_steps = config_dic["max_steps"]
+        self.test_size = config_dic["test_size"]
+
+CFG = CONFIG()
 bc = BertClient(check_length = False)
 
 def init_w(s, name = None):
@@ -42,7 +52,7 @@ def res_block(input, input_channel_num, output_channel_num, name, downsize = Fal
             h_c2_relu = tf.nn.relu6(h_c2_add, name = "h_c2_relu")
         return h_c2_relu
 
-def get_sentences_vector(batch_size = batch_size, D = None):
+def get_sentences_vector(batch_size = CFG.batch_size, D = None):
     G = databatch.get_batch(batch_size, D)
     
     while True:
@@ -58,7 +68,7 @@ def get_sentences_vector(batch_size = batch_size, D = None):
 
 if __name__ == "__main__":
     input_X = tf.placeholder(tf.float32, 
-        [None, num_comment, embedding_size, 1],
+        [None, CFG.num_comment, CFG.embedding_size, 1],
         name = "input_comment")
     input_Y = tf.placeholder(tf.int64,
         [None],
@@ -93,23 +103,32 @@ if __name__ == "__main__":
     predict_ans = tf.argmax(out_, 1)
     acc = tf.reduce_mean(tf.cast(tf.equal(predict_ans, input_Y), tf.float64))
 
+    global_step = tf.Variable(0, trainable = False)
+    lr = tf.train.exponential_decay(
+        learning_rate = CFG.lr_base,
+        global_step = global_step,
+        decay_steps = CFG.lr_step,
+        decay_rate = CFG.lr_decay,
+        staircase = True
+    )
+    #print(CFG.lr_base, CFG.lr_decay)
     with tf.name_scope("train_op"):
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
-            train_op = tf.train.AdamOptimizer(lr).minimize(loss)
+            train_op = tf.train.AdamOptimizer(lr).minimize(loss, global_step = global_step)
     sess = tf.InteractiveSession()
     tf.global_variables_initializer().run()
     tf.train.start_queue_runners()
     
-    train_D, test_D = databatch.cut_two_parts()
+    train_D, test_D = databatch.cut_two_parts(CFG.test_size)
 
-    for step in range(max_steps):
-        S_train = get_sentences_vector(batch_size = batch_size, D = train_D)
+    for step in range(CFG.max_steps):
+        S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
         X, Y, fr = next(S_train)
         
         try:
             X = np.array(X)
-            X = X.reshape([-1, num_comment, embedding_size, 1])
+            X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
             l, a, _ = sess.run(
                 [loss, acc, train_op],
                 feed_dict = {input_X : X, input_Y : Y}
@@ -120,14 +139,14 @@ if __name__ == "__main__":
         
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         if step % 100 == 0 and step > 0:
-            S_test = get_sentences_vector(batch_size = batch_size, D = test_D)
+            S_test = get_sentences_vector(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
-            for i in range(len(test_D) // batch_size):
+            for i in range(len(test_D) // CFG.batch_size):
                 X, Y, fr = next(S_test)
                 
                 try:
                     X = np.array(X)
-                    X = X.reshape([-1, num_comment, embedding_size, 1])
+                    X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
                     l, a = sess.run(
                         [loss, acc],
                         feed_dict = {input_X : X, input_Y : Y}
@@ -137,5 +156,5 @@ if __name__ == "__main__":
                     with open("wrong_data.txt", "w") as f:
                         f.write(str(fr))
                 
-            num = (len(test_D) // batch_size) * batch_size
+            num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
