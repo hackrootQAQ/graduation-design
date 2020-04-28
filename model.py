@@ -4,11 +4,11 @@ from bert_serving.client import BertClient
 import define
 import numpy as np
 
-batch_size = 50
+batch_size = 128
 embedding_size = 768
 num_comment = 768
 num_classes = 12
-max_steps = 10000
+max_steps = 50000
 lr = 1e-3
 bc = BertClient(check_length = False)
 
