@@ -125,7 +125,6 @@ if __name__ == "__main__":
         S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
         X, Y, fr = next(S_train)
         
-        print(fr)
         try:
             X = np.array(X)
             X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
