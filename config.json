@@ -6,6 +6,6 @@
     "lr_base": 0.001,
     "lr_decay": 0.98,
     "lr_step": 800,
-    "max_steps": 50000,
+    "max_steps": 65000,
     "test_size": 4096
 }

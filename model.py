@@ -111,7 +111,6 @@ if __name__ == "__main__":
         decay_rate = CFG.lr_decay,
         staircase = True
     )
-    #print(CFG.lr_base, CFG.lr_decay)
     with tf.name_scope("train_op"):
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
@@ -126,6 +125,7 @@ if __name__ == "__main__":
         S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
         X, Y, fr = next(S_train)
         
+        print(fr)
         try:
             X = np.array(X)
             X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
@@ -134,10 +134,12 @@ if __name__ == "__main__":
                 feed_dict = {input_X : X, input_Y : Y}
             )
         except:
-            with open("wrong_data.txt", "a") as f:
+            print("MISS")
+            with open("wrong_data.txt", "a+") as f:
                 f.write(str(fr))
         
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
+        """
         if step % 100 == 0 and step > 0:
             S_test = get_sentences_vector(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
@@ -158,3 +160,4 @@ if __name__ == "__main__":
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
+        """
