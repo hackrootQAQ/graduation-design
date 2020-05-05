@@ -110,7 +110,7 @@ def get_batch(batch_size, D = None):
     while True:
         ret = []; fr = []
         for i in range(batch_size):
-            L1, f = D[P[now]]; fr.append(D)
+            L1, f = D[P[now]]; fr.append(D[P[now]])
             tmpC, tmpL = get_comment(L1, f)
             ret.append((zoom(tmpC, sz), m[L1]))
             now = now + 1
