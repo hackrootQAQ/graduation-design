@@ -133,13 +133,12 @@ if __name__ == "__main__":
                 feed_dict = {input_X : X, input_Y : Y}
             )
         except:
-            print("MISS")
             with open("wrong_data.txt", "a+") as f:
                 f.write(str(fr))
         
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
-        """
-        if step % 100 == 0 and step > 0:
+        
+        if (step + 1) % 2000 == 0:
             S_test = get_sentences_vector(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
@@ -154,9 +153,8 @@ if __name__ == "__main__":
                     )
                     predict_a += a; predict_l += l
                 except: 
-                    with open("wrong_data.txt", "a") as f:
+                    with open("wrong_data.txt", "a+") as f:
                         f.write(str(fr))
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
-        """
