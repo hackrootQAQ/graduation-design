@@ -129,7 +129,7 @@ if __name__ == "__main__":
             print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         except:
             with open("wrong_data.txt", "a+") as f:
-                f.write(str(fr))
+                f.write(str(fr) + "\n")
             print("PASS")
         
         '''
@@ -149,7 +149,8 @@ if __name__ == "__main__":
                     predict_a += a; predict_l += l
                 except: 
                     with open("wrong_data.txt", "a+") as f:
-                        f.write(str(fr))
+                        f.write(str(fr) + "\n")
+                        print("PASS")
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
