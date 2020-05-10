@@ -17,7 +17,9 @@ class CONFIG(object):
         self.lr_decay = config_dic["lr_decay"]
         self.lr_step = config_dic["lr_step"]
         self.max_steps = config_dic["max_steps"]
+        self.test_interval = config_dic["test_interval"]
         self.test_size = config_dic["test_size"]
+        self.attention = config_dic["attention"]
 
 CFG = CONFIG()
 bc = BertClient(check_length = False)
@@ -32,8 +34,18 @@ def conv2d(x, W, strides = [1, 1, 1, 1], downsize = False, name = None):
     if downsize: strides = [1, 4, 4, 1]
     return tf.nn.conv2d(x, W, strides = strides, padding = "SAME", name = name)
 
-def res_block(input, input_channel_num, output_channel_num, name, downsize = False, training = True):
+def res_block(input, input_channel_num, output_channel_num, name, downsize = False, 
+    attention = False, training = True):
     with tf.variable_scope(name):
+        ''' Add attention layer. '''
+        if attention == True:
+            ''' N * H * W * C'''
+            s = input.shape.as_list()
+            W_a_softmax = tf.nn.softmax(init_w([s[1], s[3]]), axis = 0, name = "W_a")
+            W_a_reshape = tf.reshape(W_a_softmax, [1, s[1], 1, s[3]], name = "W_a_reshape")
+            W_a_tile = tf.tile(W_a_reshape, [s[0], 1, s[2], 1], name = "W_a_tile")
+            input = tf.multiply(input, W_a_tile)
+
         W_c1 = init_w([3, 3, input_channel_num, output_channel_num], name = "W_c1")
         h_c1 = conv2d(input, W_c1, downsize = downsize, name = "h_c1")
         h_c1_bn = tf.layers.batch_normalization(h_c1, training = training, name = "h_c1_bn")
@@ -61,29 +73,27 @@ def get_sentences_vector(batch_size = CFG.batch_size, D = None):
         for items in tmp:
             y.append(items[1])
             sens = [comment.content for comment in items[0]]
-            for i in range(len(sens)): 
-                if sens[i] is None: sens[i] == "23333"
             x.append(bc.encode(sens))
         yield x, y, fr
 
 if __name__ == "__main__":
     input_X = tf.placeholder(tf.float32, 
-        [None, CFG.num_comment, CFG.embedding_size, 1],
+        [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1],
         name = "input_comment")
     input_Y = tf.placeholder(tf.int64,
-        [None],
+        [CFG.batch_size],
         name = "input_label")
 
     #192 * 192
-    conv1_x_1 = res_block(input_X, 1, 4, "conv1_x_1", downsize = True)
+    conv1_x_1 = res_block(input_X, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention)
     conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2")
 
     #48 * 48
-    conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True)
+    conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True, attention = CFG.attention)
     conv2_x_2 = res_block(conv2_x_1, 16, 16, "conv2_x_2")
 
     #12 * 12
-    conv3_x_1 = res_block(conv2_x_2, 16, 64, "conv3_x_1", downsize = True)
+    conv3_x_1 = res_block(conv2_x_2, 16, 64, "conv3_x_1", downsize = True, attention = CFG.attention)
     conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2")
     conv3_x_p = tf.nn.avg_pool(value = conv3_x_2,
         ksize = [1, 12, 12, 1],
@@ -120,9 +130,9 @@ if __name__ == "__main__":
     tf.train.start_queue_runners()
     
     train_D, test_D = databatch.cut_two_parts(CFG.test_size)
-
+    S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
+        
     for step in range(CFG.max_steps):
-        S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
         X, Y, fr = next(S_train)
         
         try:
@@ -138,7 +148,7 @@ if __name__ == "__main__":
         
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         
-        if (step + 1) % 2000 == 0:
+        if (step + 1) % CFG.test_interval == 0:
             S_test = get_sentences_vector(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):

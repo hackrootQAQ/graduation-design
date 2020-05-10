@@ -104,8 +104,7 @@ def cut_two_parts(test_size):
 
 sz = 768
 def get_batch(batch_size, D = None):
-    P = [i for i in range(len(D))]
-    random.shuffle(P)
+    P = [i for i in range(len(D))]; random.shuffle(P)
     now = 0
     while True:
         ret = []; fr = []
@@ -113,10 +112,21 @@ def get_batch(batch_size, D = None):
             L1, f = D[P[now]]; fr.append(D[P[now]])
             tmpC, tmpL = get_comment(L1, f)
             ret.append((zoom(tmpC, sz), m[L1]))
-            now = now + 1
-            if now >= len(D): now = 0
+            now = (now + 1) % len(D)
         yield ret, fr
 
+def get_raw_batch(batch_size, D = None):
+    P = [i for i in range(len(D))]; random.shuffle(P)
+    now = 0
+    while True:
+        ret = []; fr = []
+        for i in range(batch_size):
+            L1, f = D[P[now]]; fr.append(D[P[now]])
+            tmpC, tmpL = get_comment(L1, f)
+            ret.append(tmpC, m[L1])
+            now = (now + 1) % len(D)
+        yield ret, fr
+        
 def print_sz_0():
     len_list = []
     for L1, L2 in relational_table.items():

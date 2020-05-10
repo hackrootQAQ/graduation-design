@@ -1,5 +1,5 @@
 {
-    "batch_size": 64,
+    "batch_size": 16,
     "embedding_size": 768,
     "num_comment": 768,
     "num_class": 12,
@@ -7,5 +7,7 @@
     "lr_decay": 0.98,
     "lr_step": 800,
     "max_steps": 10000,
-    "test_size": 4096
+    "test_interval": 5000,
+    "test_size": 4096,
+    "attention": true
 }
