@@ -126,11 +126,11 @@ if __name__ == "__main__":
                 [loss, acc, train_op],
                 feed_dict = {input_X : X, input_Y : Y}
             )
+            print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         except:
             with open("wrong_data.txt", "a+") as f:
                 f.write(str(fr))
-        
-        print("step %d, loss %.4f, acc %.4f" % (step, l, a))
+            print("PASS")
         
         '''
         if (step + 1) % CFG.test_interval == 0:
