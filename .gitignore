@@ -1,5 +1,6 @@
 data/
 paper/
+paper-reading/
 __pycache__/
 *.txt
 *.zip
