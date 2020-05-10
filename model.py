@@ -3,25 +3,9 @@ import databatch
 from bert_serving.client import BertClient
 import define
 import numpy as np
-import json
+import config
 
-class CONFIG(object):
-    def __init__(self):
-        with open("config.json", "r") as f:
-            config_dic = json.load(f)
-        self.batch_size = config_dic["batch_size"]
-        self.embedding_size = config_dic["embedding_size"]
-        self.num_comment = config_dic["num_comment"]
-        self.num_class = config_dic["num_class"]
-        self.lr_base = config_dic["lr_base"]
-        self.lr_decay = config_dic["lr_decay"]
-        self.lr_step = config_dic["lr_step"]
-        self.max_steps = config_dic["max_steps"]
-        self.test_interval = config_dic["test_interval"]
-        self.test_size = config_dic["test_size"]
-        self.attention = config_dic["attention"]
-
-CFG = CONFIG()
+CFG = config.CONFIG()
 bc = BertClient(check_length = False)
 
 def init_w(s, name = None):
@@ -148,6 +132,7 @@ if __name__ == "__main__":
         
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         
+        '''
         if (step + 1) % CFG.test_interval == 0:
             S_test = get_sentences_vector(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
@@ -168,3 +153,4 @@ if __name__ == "__main__":
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
+        '''
