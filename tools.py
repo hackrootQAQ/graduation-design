@@ -51,7 +51,7 @@ def read_data(L1, f, _out):
             fl.write("{} {} {}\n".format(str(comment.time), str(comment.vtime), str(comment.content)))
 
 def del_data():
-    with open("wrong_data.txt", "r") as fl:
+    with open("wrong_data", "r") as fl:
         for line in fl:
             L1, f = eval(line)[0]
             print("Delete file ({}, {})...".format(str(L1), str(f)), end = "")
@@ -68,7 +68,7 @@ def find_zero():
         tmpC, tmpL = databatch.get_new_comment(L1, f)
         num += 1
         if len(tmpC) == 0: 
-            with open("wrong_data.txt", "a+") as fl:
+            with open("wrong_data", "a+") as fl:
                 fl.write("[({}, \"{}\")]\n".format(str(L1), str(f)))
             wr += 1
         print("Check {}, wrong {}.".format(str(num), str(wr)))

@@ -128,7 +128,7 @@ if __name__ == "__main__":
             )
             print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         except:
-            with open("wrong_data.txt", "a+") as f:
+            with open("wrong_data", "a+") as f:
                 f.write(str(fr) + "\n")
             print("PASS")
         
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                     )
                     predict_a += a; predict_l += l
                 except: 
-                    with open("wrong_data.txt", "a+") as f:
+                    with open("wrong_data", "a+") as f:
                         f.write(str(fr) + "\n")
                         print("PASS")
                 
