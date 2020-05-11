@@ -69,13 +69,13 @@ if __name__ == "__main__":
     pred = tf.arg_max(predout - tf.expand_dims(tf.reduce_mean(predout, 1), 1), 0) 
     acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(Y, 0)), tf.float32))
 
-    sess = tf.InteractiveSession()
-    tf.global_variables_initializer().run()
-    tf.train.start_queue_runners()
     with tf.name_scope("train_op"):
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
             train_op = tf.train.AdamOptimizer(CFG.lr).minimize(loss)
+    sess = tf.InteractiveSession()
+    tf.global_variables_initializer().run()
+    tf.train.start_queue_runners()
 
     train_D, test_D = databatch.cut_two_parts(CFG.test_size)
     S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
