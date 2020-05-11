@@ -19,8 +19,7 @@ def get_sentences_vector(batch_size = CFG.batch_size, D = None):
             sens = [comment.content for comment in items[0]]
             bx = np.array(bc.encode(sens))
             x.append(bx.mean(0))
-        y = np.eye(CFG.num_class)[y]
-        print(y.shape)
+        y = (np.eye(CFG.num_class)[y]).transpose()
         yield x, y, fr
 
 def reshape_matmul(mat):
@@ -97,3 +96,4 @@ if __name__ == "__main__":
 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
+    
