@@ -38,6 +38,12 @@ def wash():
             with open(path, "wb") as fl:
                     pickle.dump(page_new, fl)
 
+def read_new_data(L1, f, _out):
+    comments, label = databatch.get_new_comment(L1, f)
+    with open(_out, "w", encoding = "utf-8") as fl:
+        for comment in comments:
+            fl.write("{} {} {}\n".format(str(comment.time), str(comment.vtime), str(comment.content)))
+
 def read_data(L1, f, _out):
     comments, label = databatch.get_comment(L1, f)
     with open(_out, "w", encoding = "utf-8") as fl:
@@ -55,6 +61,19 @@ def del_data():
             except:
                 print("Failed!")
 
+def find_zero():
+    D1, D2 = databatch.cut_two_parts(0)
+    num = 0; wr = 0
+    for L1, f in D1:
+        tmpC, tmpL = databatch.get_new_comment(L1, f)
+        num += 1
+        if len(tmpC) == 0: 
+            with open("wrong_data.txt", "a+") as fl:
+                fl.write("[({}, \"{}\")]\n".format(str(L1), str(f)))
+            wr += 1
+        print("Check {}, wrong {}.".format(str(num), str(wr)))
+
 if __name__ == "__main__":
-    #read_data(13, 32396504, _out = "out.txt")
+    #read_new_data(119, 7439521, _out = "out.txt")
     del_data()
+    #find_zero()

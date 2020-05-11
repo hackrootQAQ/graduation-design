@@ -110,45 +110,31 @@ def cut_two_parts(test_size):
         fn = get_new_filename(L1)
         D.extend([(L1, f) for f in fn])
     random.shuffle(D)
+    if test_size == 0: return D, []
     return D[:-test_size], D[-test_size:]    
 
 sz = 768
 def get_batch(batch_size, D = None):
-    P = [i for i in range(len(D))]; random.shuffle(P)
     now = 0
     while True:
         ret = []; fr = []
         for i in range(batch_size):
-            L1, f = D[P[now]]; fr.append(D[P[now]])
+            L1, f = D[now]; fr.append(D[now])
             tmpC, tmpL = get_new_comment(L1, f)
             ret.append((zoom(tmpC, sz), m[L1]))
             now = (now + 1) % len(D)
         yield ret, fr
 
 def get_raw_batch(batch_size, D = None):
-    P = [i for i in range(len(D))]; random.shuffle(P)
     now = 0
     while True:
         ret = []; fr = []
         for i in range(batch_size):
-            L1, f = D[P[now]]; fr.append(D[P[now]])
+            L1, f = D[now]; fr.append(D[now])
             tmpC, tmpL = get_new_comment(L1, f)
             ret.append((tmpC, m[L1]))
             now = (now + 1) % len(D)
         yield ret, fr
-        
-def print_sz_0():
-    len_list = []
-    for L1, L2 in relational_table.items():
-        fn = get_filename(L1)
-        for f in fn:
-            path = "./data/comment/{}/{}".format(str(L1), str(f))
-            with open(path, "rb") as fl:
-                comment = pickle.load(fl)
-            len_list.append(comment.tlen)
-    len_list = sorted(len_list)
-    with open("theMsg.txt", "w") as f:
-        for l in len_list: f.write(str(l) + "\n")
 
 if __name__ == "__main__":
-    print_sz_0()
+    pass
