@@ -132,7 +132,6 @@ if __name__ == "__main__":
                 f.write(str(fr) + "\n")
             print("PASS")
         
-        '''
         if (step + 1) % CFG.test_interval == 0:
             S_test = get_sentences_vector(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
@@ -154,4 +153,4 @@ if __name__ == "__main__":
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
-        '''
+        

@@ -19,7 +19,9 @@ def get_sentences_vector(batch_size = CFG.batch_size, D = None):
             sens = [comment.content for comment in items[0]]
             bx = np.array(bc.encode(sens))
             x.append(bx.mean(0))
-        yield x, np.eye(CFG.num_class)[y], fr
+        y = np.eye(CFG.num_class)[y]
+        print(y.shape)
+        yield x, y, fr
 
 def reshape_matmul(mat):
     v1 = tf.expand_dims(mat, 1)
@@ -29,8 +31,11 @@ def reshape_matmul(mat):
 def Gaussian_Kernel(gamma, data):
     g = tf.constant(gamma) 
     dist = tf.reshape(tf.reduce_sum(tf.square(data), 1), [CFG.batch_size, 1])
-    sq_dists = tf.add(tf.subtract(dist, tf.multiply(2., tf.matmul(data, tf.transpose(data))), tf.transpose(dist)))
-    return tf.exp(tf.multiply(g, tf.abs(sq_dists)))
+    sq_dist = tf.add(
+        tf.subtract(dist, tf.multiply(2., tf.matmul(data, tf.transpose(data)))), 
+        tf.transpose(dist)
+    )
+    return tf.exp(tf.multiply(g, tf.abs(sq_dist)))
 
 if __name__ == "__main__":
     X = tf.placeholder(
@@ -61,7 +66,7 @@ if __name__ == "__main__":
     P_sq_dist = tf.add(tf.subtract(rA, tf.multiply(2., tf.matmul(X, tf.transpose(P)))), tf.transpose(rB)) 
     P_K = tf.exp(tf.multiply(CFG.gamma, tf.abs(P_sq_dist)))
 
-    predout = tf.matmul(tf.matmul(Y, b), P_K) 
+    predout = tf.matmul(tf.multiply(Y, b), P_K) 
     pred = tf.arg_max(predout - tf.expand_dims(tf.reduce_mean(predout, 1), 1), 0) 
     acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(Y, 0)), tf.float32))
 

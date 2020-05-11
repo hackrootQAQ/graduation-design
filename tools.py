@@ -29,6 +29,7 @@ def wash():
             for comment in comments:
                 tmp = handle(comment.content)
                 if len(tmp) < 2: continue
+                if len(tmp) > 20: continue
                 new_comment.append(
                     define.Comment(comment.time, comment.vtime, tmp)
                 )
@@ -37,22 +38,23 @@ def wash():
             with open(path, "wb") as fl:
                     pickle.dump(page_new, fl)
 
-def read_data():
-    pass
+def read_data(L1, f, _out):
+    comments, label = databatch.get_comment(L1, f)
+    with open(_out, "w", encoding = "utf-8") as fl:
+        for comment in comments:
+            fl.write("{} {} {}\n".format(str(comment.time), str(comment.vtime), str(comment.content)))
 
-to_del = [
-    (13, '32396504'),
-    (4, '2423718'),
-    (129, '6896450'),
-    (13, '1022200'),
-    (119, '835752'),
-    (119, '113187'),
-    (13, '11185914'),
-    (4, '25510151'),
-    (5, '20100660'),
-]
 def del_data():
-
+    with open("wrong_data.txt", "r") as fl:
+        for line in fl:
+            L1, f = eval(line)[0]
+            print("Delete file ({}, {})...".format(str(L1), str(f)), end = "")
+            try:
+                os.remove("./data/comment_new/{}/{}".format(str(L1), str(f)))
+                print("Completed!")
+            except:
+                print("Failed!")
 
 if __name__ == "__main__":
-    pass
+    #read_data(13, 32396504, _out = "out.txt")
+    del_data()

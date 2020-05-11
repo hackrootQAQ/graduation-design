@@ -34,13 +34,23 @@ m = {
 }
 
 def get_comment(p1, p2):
-    path = "./data/comment_new/{}/{}".format(str(p1), str(p2))
+    path = "./data/comment/{}/{}".format(str(p1), str(p2))
     with open(path, "rb") as f:
         comment = pickle.load(f)
-    #print(comment.clist[0].content)
     return (comment.clist, len(comment.clist))
 
 def get_filename(p1):
+    path = "./data/comment/{}".format(str(p1))
+    for r, d, f in os.walk(path):
+        return f
+
+def get_new_comment(p1, p2):
+    path = "./data/comment_new/{}/{}".format(str(p1), str(p2))
+    with open(path, "rb") as f:
+        comment = pickle.load(f)
+    return (comment.clist, len(comment.clist))
+
+def get_new_filename(p1):
     path = "./data/comment_new/{}".format(str(p1))
     for r, d, f in os.walk(path):
         return f
@@ -97,7 +107,7 @@ def zoom(urtext, sz):
 def cut_two_parts(test_size):
     D = []
     for L1, L2 in relational_table.items():
-        fn = get_filename(L1)
+        fn = get_new_filename(L1)
         D.extend([(L1, f) for f in fn])
     random.shuffle(D)
     return D[:-test_size], D[-test_size:]    
@@ -110,7 +120,7 @@ def get_batch(batch_size, D = None):
         ret = []; fr = []
         for i in range(batch_size):
             L1, f = D[P[now]]; fr.append(D[P[now]])
-            tmpC, tmpL = get_comment(L1, f)
+            tmpC, tmpL = get_new_comment(L1, f)
             ret.append((zoom(tmpC, sz), m[L1]))
             now = (now + 1) % len(D)
         yield ret, fr
@@ -122,8 +132,8 @@ def get_raw_batch(batch_size, D = None):
         ret = []; fr = []
         for i in range(batch_size):
             L1, f = D[P[now]]; fr.append(D[P[now]])
-            tmpC, tmpL = get_comment(L1, f)
-            ret.append(tmpC, m[L1])
+            tmpC, tmpL = get_new_comment(L1, f)
+            ret.append((tmpC, m[L1]))
             now = (now + 1) % len(D)
         yield ret, fr
         
