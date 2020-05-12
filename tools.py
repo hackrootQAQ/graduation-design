@@ -1,4 +1,4 @@
-import define, pickle, databatch, os
+import define, pickle, databatch, os, shutil
 
 ## reference: https://github.com/uupers/BiliSpider/wiki/%E8%A7%86%E9%A2%91%E5%88%86%E5%8C%BA%E5%AF%B9%E5%BA%94%E8%A1%A8
 relational_table = {
@@ -73,7 +73,31 @@ def find_zero():
             wr += 1
         print("Check {}, wrong {}.".format(str(num), str(wr)))
 
+def mince():
+    for L1, L2 in relational_table.items():
+        for L in L2:
+            try:
+                os.mkdir("./data/comment_mince/{}".format(str(L)))
+            except:
+                pass
+    m = {}
+    for key, value in relational_table.items():
+        for tid in value:
+            path1 = "./data/msg/{}/{}".format(str(key), str(tid))
+            with open(path1, "rb") as f:
+                vedio_msg = pickle.load(f)
+            for v in vedio_msg:
+                m[v.aid] = tid
+    for L1, L2 in databatch.relational_table.items():
+        fn = databatch.get_filename(L1)
+        for f in fn:
+            srcfile = "./data/comment_new/{}/{}".format(str(L1), str(f))
+            if not os.path.exists(srcfile): continue
+            dstfile = "./data/comment_mince/{}/".format(str(m[int(f)]))
+            shutil.copy(srcfile, dstfile)
+
 if __name__ == "__main__":
     #read_new_data(119, 7439521, _out = "out.txt")
-    del_data()
+    #del_data()
     #find_zero()
+    mince()
