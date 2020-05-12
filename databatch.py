@@ -18,20 +18,11 @@ relational_table = {
     5   : [71, 137, 131],
     181 : [182, 183, 85, 184, 86],
 }
-m = {
-    1   : 0,
-    13  : 1,
-    3   : 2,
-    129 : 3,
-    4   : 4,
-    36  : 5,
-    188 : 6,
-    160 : 7,
-    119 : 8,
-    155 : 9,
-    5   : 10,
-    181 : 11,
-}
+label_list = []; m = {}
+for L1, L2 in relational_table.items():
+    label_list.extend(L2)
+for i in range(label_list):
+    m[label_list[i]] = i + 1
 
 def get_comment(p1, p2):
     path = "./data/comment/{}/{}".format(str(p1), str(p2))
@@ -52,6 +43,17 @@ def get_new_comment(p1, p2):
 
 def get_new_filename(p1):
     path = "./data/comment_new/{}".format(str(p1))
+    for r, d, f in os.walk(path):
+        return f
+
+def get_mince_comment(p1, p2):
+    path = "./data/comment_mince/{}/{}".format(str(p1), str(p2))
+    with open(path, "rb") as f:
+        comment = pickle.load(f)
+    return (comment.clist, len(comment.clist))
+
+def get_mince_filename(p1):
+    path = "./data/comment_mince/{}".format(str(p1))
     for r, d, f in os.walk(path):
         return f
 
@@ -104,6 +106,7 @@ def zoom(urtext, sz):
     if len(urtext) < sz: return expansion(urtext, sz)
     else: return lessen(urtext, sz)
 
+"""
 def cut_two_parts(test_size):
     D = []
     for L1, L2 in relational_table.items():
@@ -112,6 +115,17 @@ def cut_two_parts(test_size):
     random.shuffle(D)
     if test_size == 0: return D, []
     return D[:-test_size], D[-test_size:]    
+"""
+
+def cut_two_parts(test_size):
+    D = []
+    for L1, L2 in relational_table.items():
+        for L in L2:
+            fn = get_mince_filename(L)
+            D.extend([(L, f) for f in fn])
+    random.shuffle(D)
+    if test_size == 0: return D, []
+    return D[:-test_size], D[-test_size:] 
 
 sz = 768
 def get_batch(batch_size, D = None):
@@ -120,7 +134,7 @@ def get_batch(batch_size, D = None):
         ret = []; fr = []
         for i in range(batch_size):
             L1, f = D[now]; fr.append(D[now])
-            tmpC, tmpL = get_new_comment(L1, f)
+            tmpC, tmpL = get_mince_comment(L1, f)
             ret.append((zoom(tmpC, sz), m[L1]))
             now = (now + 1) % len(D)
         yield ret, fr
@@ -131,7 +145,7 @@ def get_raw_batch(batch_size, D = None):
         ret = []; fr = []
         for i in range(batch_size):
             L1, f = D[now]; fr.append(D[now])
-            tmpC, tmpL = get_new_comment(L1, f)
+            tmpC, tmpL = get_mince_comment(L1, f)
             ret.append((tmpC, m[L1]))
             now = (now + 1) % len(D)
         yield ret, fr
