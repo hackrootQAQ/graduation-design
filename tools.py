@@ -89,7 +89,7 @@ def mince():
             for v in vedio_msg:
                 m[v.aid] = tid
     for L1, L2 in databatch.relational_table.items():
-        fn = databatch.get_filename(L1)
+        fn = databatch.get_new_filename(L1)
         for f in fn:
             srcfile = "./data/comment_new/{}/{}".format(str(L1), str(f))
             if not os.path.exists(srcfile): continue
