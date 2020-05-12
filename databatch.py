@@ -22,7 +22,7 @@ label_list = []; m = {}
 for L1, L2 in relational_table.items():
     label_list.extend(L2)
 for i in range(len(label_list)):
-    m[label_list[i]] = i + 1
+    m[label_list[i]] = i
 
 def get_comment(p1, p2):
     path = "./data/comment/{}/{}".format(str(p1), str(p2))
