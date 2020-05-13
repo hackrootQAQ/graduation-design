@@ -2,6 +2,7 @@ data/
 paper/
 paper-reading/
 __pycache__/
+save/
 *.txt
 *.zip
 test.py
