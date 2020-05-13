@@ -110,7 +110,6 @@ def gen_vedio_vector():
         m[f] = bx.mean(0)
         num += 1
         print("{}/{}".format(str(num), str(len(_vedio))))
-        break
     with open("./data/comment_new/vedio_vector", "wb") as f:
         pickle.dump(m, f)
 
@@ -120,3 +119,8 @@ if __name__ == "__main__":
     #find_zero()
     #mince()
     gen_vedio_vector()
+    """
+    with open("./data/comment_new/vedio_vector", "rb") as f:
+        comment = pickle.load(f)
+    print(comment)
+    """
