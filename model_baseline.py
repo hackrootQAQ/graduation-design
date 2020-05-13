@@ -60,12 +60,15 @@ if __name__ == "__main__":
     loss_2 = tf.reduce_sum(tf.multiply(K, tf.multiply(bvec_cross, Y_cross)), [1, 2])
     loss = tf.reduce_sum(tf.negative(tf.subtract(loss_1, loss_2)))
 
+    """
     rA = tf.reshape(tf.reduce_sum(tf.square(X), 1), [CFG.batch_size, 1])
     rB = tf.reshape(tf.reduce_sum(tf.square(P), 1), [CFG.batch_size, 1])
     P_sq_dist = tf.add(tf.subtract(rA, tf.multiply(2., tf.matmul(X, tf.transpose(P)))), tf.transpose(rB)) 
     P_K = tf.exp(tf.multiply(CFG.gamma, tf.abs(P_sq_dist)))
+    """
 
-    predout = tf.matmul(tf.multiply(Y, b), P_K) 
+    #predout = tf.matmul(tf.multiply(Y, b), P_K) 
+    predout = model_output
     pred = tf.arg_max(predout - tf.expand_dims(tf.reduce_mean(predout, 1), 1), 0) 
     acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(Y, 0)), tf.float32))
 
@@ -80,10 +83,10 @@ if __name__ == "__main__":
     
     for step in range(CFG.max_steps):
         input_X, input_Y, fr = next(S_train)
-        _ = sess.run(train_op, feed_dict = {X : input_X, Y : input_Y})
-        _X, _Y, _fr = next(S_train)
-        _loss, _pred = sess.run([loss, pred], feed_dict = {X : input_X, Y : input_Y, P : _X})
-        _acc = np.mean(np.equal(_pred, np.argmax(_Y, 0)))
+        _loss, _acc, _ = sess.run([loss, acc, train_op], feed_dict = {X : input_X, Y : input_Y})
+        #_X, _Y, _fr = next(S_train)
+        #_loss, _pred = sess.run([loss, pred], feed_dict = {X : input_X, Y : input_Y, P : _X})
+        #_acc = np.mean(np.equal(_pred, np.argmax(_Y, 0)))
         print("step %d, loss %.4f, acc %.4f" % (step, _loss, _acc))
 
         if (step + 1) % CFG.test_interval == 0:
