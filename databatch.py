@@ -106,7 +106,6 @@ def zoom(urtext, sz):
     if len(urtext) < sz: return expansion(urtext, sz)
     else: return lessen(urtext, sz)
 
-"""
 def cut_two_parts(test_size):
     D = []
     for L1, L2 in relational_table.items():
@@ -115,8 +114,8 @@ def cut_two_parts(test_size):
     random.shuffle(D)
     if test_size == 0: return D, []
     return D[:-test_size], D[-test_size:]    
-"""
 
+"""
 def cut_two_parts(test_size):
     D = []
     for L1, L2 in relational_table.items():
@@ -126,6 +125,7 @@ def cut_two_parts(test_size):
     random.shuffle(D)
     if test_size == 0: return D, []
     return D[:-test_size], D[-test_size:] 
+"""
 
 sz = 768
 def get_batch(batch_size, D = None):
@@ -145,7 +145,7 @@ def get_raw_batch(batch_size, D = None):
         ret = []; fr = []
         for i in range(batch_size):
             L1, f = D[now]; fr.append(D[now])
-            tmpC, tmpL = get_mince_comment(L1, f)
+            tmpC, tmpL = get_new_comment(L1, f)
             ret.append((tmpC, m[L1]))
             now = (now + 1) % len(D)
         yield ret, fr
