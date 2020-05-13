@@ -1,4 +1,7 @@
 import define, pickle, databatch, os, shutil
+import tensorflow as tf
+from bert_serving.client import BertClient
+import numpy as np
 
 ## reference: https://github.com/uupers/BiliSpider/wiki/%E8%A7%86%E9%A2%91%E5%88%86%E5%8C%BA%E5%AF%B9%E5%BA%94%E8%A1%A8
 relational_table = {
@@ -96,8 +99,24 @@ def mince():
             dstfile = "./data/comment_mince/{}/".format(str(m[int(f)]))
             shutil.copy(srcfile, dstfile)
 
+def gen_vedio_vector():
+    bc = BertClient(check_length = False)
+    _vedio, _ = databatch.cut_two_parts(0)
+    m = {}; num = 0
+    for L1, f in _vedio:
+        tmpC, tmpL = databatch.get_new_comment(L1, f)
+        sens = [comment.content for comment in tmpC]
+        bx = np.array(bc.encode(sens))
+        m[f] = bx.mean(0)
+        num += 1
+        print("{}/{}".format(str(num), str(len(_vedio))))
+        break
+    with open("./data/comment_new/vedio_vector", "wb") as f:
+        pickle.dump(m, f)
+
 if __name__ == "__main__":
     #read_new_data(119, 7439521, _out = "out.txt")
     #del_data()
     #find_zero()
-    mince()
+    #mince()
+    gen_vedio_vector()
