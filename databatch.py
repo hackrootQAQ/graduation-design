@@ -124,7 +124,6 @@ def cut_two_parts(test_size):
             fn = get_mince_filename(L)
             D.extend([(L, f) for f in fn])
     random.shuffle(D)
-    print(len(D))
     if test_size == 0: return D, []
     return D[:-test_size], D[-test_size:] 
 
