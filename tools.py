@@ -115,10 +115,10 @@ def gen_vedio_vector():
 
 if __name__ == "__main__":
     #read_new_data(119, 7439521, _out = "out.txt")
-    #del_data()
+    del_data()
     #find_zero()
     #mince()
-    gen_vedio_vector()
+    #gen_vedio_vector()
     """
     with open("./data/comment_new/vedio_vector", "rb") as f:
         comment = pickle.load(f)

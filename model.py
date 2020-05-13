@@ -112,6 +112,7 @@ if __name__ == "__main__":
     sess = tf.InteractiveSession()
     tf.global_variables_initializer().run()
     tf.train.start_queue_runners()
+    saver = tf.train.Saver(max_to_keep = 0)
     
     train_D, test_D = databatch.cut_two_parts(CFG.test_size)
     S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
@@ -153,4 +154,5 @@ if __name__ == "__main__":
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
+    saver.save(sess, "./save", global_step = global_step)
         
