@@ -83,7 +83,7 @@ if __name__ == "__main__":
         _ = sess.run(train_op, feed_dict = {X : input_X, Y : input_Y})
         _X, _Y, _fr = next(S_train)
         _loss, _pred = sess.run([loss, pred], feed_dict = {X : input_X, Y : input_Y, P : _X})
-        _acc = np.reduce_mean(np.equal(_pred, np.argmax(_Y, 0)))
+        _acc = np.mean(np.equal(_pred, np.argmax(_Y, 0)))
         print("step %d, loss %.4f, acc %.4f" % (step, _loss, _acc))
 
         if (step + 1) % CFG.test_interval == 0:
