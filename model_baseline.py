@@ -20,8 +20,7 @@ def get_sentences_vector(batch_size = CFG.batch_size, D = None):
             bx = np.array(bc.encode(sens))
             x.append(bx.mean(0))
         y = (np.eye(CFG.num_class)[y]).transpose()
-        with open("debug.txt", "w") as f:
-            f.write("\n".join(y))
+        numpy.savetxt("debug.txt", y)
         yield x, y, fr
 
 def reshape_matmul(mat):
