@@ -69,7 +69,9 @@ if __name__ == "__main__":
 
     #predout = tf.matmul(tf.multiply(Y, b), P_K) 
     predout = model_output
-    pred = tf.arg_max(predout - tf.expand_dims(tf.reduce_mean(predout, 1), 1), 0) 
+    #print(predout.shape)
+    #pred = tf.arg_max(predout - tf.expand_dims(tf.reduce_mean(predout, 1), 1), 0) 
+    pred = tf.argmax(predout, 0)
     acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(Y, 0)), tf.float32))
 
     my_opt = tf.train.GradientDescentOptimizer(0.01) 
@@ -99,4 +101,4 @@ if __name__ == "__main__":
 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
-    
+   
