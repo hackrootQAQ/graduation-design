@@ -19,7 +19,9 @@ def get_sentences_vector(batch_size = CFG.batch_size, D = None):
             sens = [comment.content for comment in items[0]]
             bx = np.array(bc.encode(sens))
             x.append(bx.mean(0))
+        print(x[0])
         y = (np.eye(CFG.num_class)[y]).transpose()
+        print(y)
         yield x, y, fr
 
 def reshape_matmul(mat):
