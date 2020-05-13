@@ -77,13 +77,13 @@ if __name__ == "__main__":
 
     train_D, test_D = databatch.cut_two_parts(CFG.test_size)
     S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
-    _X, _Y, _fr = next(S_train)
-
+    
     for step in range(CFG.max_steps):
         input_X, input_Y, fr = next(S_train)
-        _loss, _ = sess.run([loss, train_op], feed_dict = {X : input_X, Y : input_Y})
-        _acc = sess.run(acc, feed_dict = {X : input_X, Y : input_Y, P : input_X})
-        _pre = sess.run(pred, feed_dict = {X : _X, Y : _Y, P : input_X})
+        _ = sess.run(train_op, feed_dict = {X : input_X, Y : input_Y})
+        _X, _Y, _fr = next(S_train)
+        _loss, _pred = sess.run([loss, pred], feed_dict = {X : input_X, Y : input_Y, P : _X})
+        _acc = np.reduce_mean(np.equal(_pred, np.argmax(_Y, 0)))
         print("step %d, loss %.4f, acc %.4f" % (step, _loss, _acc))
 
         if (step + 1) % CFG.test_interval == 0:
