@@ -20,7 +20,6 @@ def get_sentences_vector(batch_size = CFG.batch_size, D = None):
             bx = np.array(bc.encode(sens))
             x.append(bx.mean(0))
         y = (np.eye(CFG.num_class)[y]).transpose()
-        np.savetxt("debug.txt", y)
         yield x, y, fr
 
 def reshape_matmul(mat):
@@ -70,10 +69,8 @@ if __name__ == "__main__":
     pred = tf.arg_max(predout - tf.expand_dims(tf.reduce_mean(predout, 1), 1), 0) 
     acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(Y, 0)), tf.float32))
 
-    with tf.name_scope("train_op"):
-        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        with tf.control_dependencies(update_ops):
-            train_op = tf.train.AdamOptimizer(CFG.lr).minimize(loss)
+    my_opt = tf.train.GradientDescentOptimizer(0.01) 
+    train_op = my_opt.minimize(loss) 
     sess = tf.InteractiveSession()
     tf.global_variables_initializer().run()
     tf.train.start_queue_runners()
@@ -85,6 +82,8 @@ if __name__ == "__main__":
         input_X, input_Y, fr = next(S_train)
         _loss, _ = sess.run([loss, train_op], feed_dict = {X : input_X, Y : input_Y})
         _acc = sess.run(acc, feed_dict = {X : input_X, Y : input_Y, P : input_X})
+        _pre = sess.run(pred, feed_dict = {X : input_X, Y : input_Y, P : input_X})
+        print(_pre)
         print("step %d, loss %.4f, acc %.4f" % (step, _loss, _acc))
 
         if (step + 1) % CFG.test_interval == 0:
