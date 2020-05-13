@@ -19,8 +19,14 @@ relational_table = {
     181 : [182, 183, 85, 184, 86],
 }
 label_list = []; m = {}
+"""
 for L1, L2 in relational_table.items():
     label_list.extend(L2)
+for i in range(len(label_list)):
+    m[label_list[i]] = i
+"""
+for L1, L2 in relational_table.items():
+    label_list.append(L1)
 for i in range(len(label_list)):
     m[label_list[i]] = i
 
