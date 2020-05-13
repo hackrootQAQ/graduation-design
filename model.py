@@ -154,5 +154,5 @@ if __name__ == "__main__":
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
-    saver.save(sess, "./save", global_step = global_step)
+    saver.save(sess, "./save/model", global_step = global_step)
         
