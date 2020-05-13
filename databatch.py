@@ -140,7 +140,7 @@ def get_batch(batch_size, D = None):
         ret = []; fr = []
         for i in range(batch_size):
             L1, f = D[now]; fr.append(D[now])
-            tmpC, tmpL = get_mince_comment(L1, f)
+            tmpC, tmpL = get_new_comment(L1, f)
             ret.append((zoom(tmpC, sz), m[L1]))
             now = (now + 1) % len(D)
         yield ret, fr
