@@ -59,7 +59,7 @@ def del_data():
             L1, f = eval(line)[0]
             print("Delete file ({}, {})...".format(str(L1), str(f)), end = "")
             try:
-                os.remove("./data/comment_new/{}/{}".format(str(L1), str(f)))
+                os.remove("/home/data/ljz/data/comment_new/{}/{}".format(str(L1), str(f)))
                 print("Completed!")
             except:
                 print("Failed!")
@@ -80,13 +80,13 @@ def mince():
     for L1, L2 in relational_table.items():
         for L in L2:
             try:
-                os.mkdir("./data/comment_mince/{}".format(str(L)))
+                os.mkdir("/home/data/ljz/data/comment_mince/{}".format(str(L)))
             except:
                 pass
     m = {}
     for key, value in relational_table.items():
         for tid in value:
-            path1 = "./data/msg/{}/{}".format(str(key), str(tid))
+            path1 = "/home/data/ljz/data/msg/{}/{}".format(str(key), str(tid))
             with open(path1, "rb") as f:
                 vedio_msg = pickle.load(f)
             for v in vedio_msg:
@@ -94,9 +94,9 @@ def mince():
     for L1, L2 in databatch.relational_table.items():
         fn = databatch.get_new_filename(L1)
         for f in fn:
-            srcfile = "./data/comment_new/{}/{}".format(str(L1), str(f))
+            srcfile = "/home/data/ljz/data/comment_new/{}/{}".format(str(L1), str(f))
             if not os.path.exists(srcfile): continue
-            dstfile = "./data/comment_mince/{}/".format(str(m[int(f)]))
+            dstfile = "/home/data/ljz/data/comment_mince/{}/".format(str(m[int(f)]))
             shutil.copy(srcfile, dstfile)
 
 def gen_vedio_vector():
@@ -119,7 +119,7 @@ def gen_vedio_vector():
         vec = bc.encode(sens)
         num += 1
         print("{}/{}".format(str(num), str(len(_vedio))))
-        with open("./data/comment_new/vedio_vector/{}".format(str(f)), "wb") as fl:
+        with open("/home/data/ljz/data/comment_new/vedio_vector1/{}".format(str(f)), "wb") as fl:
             pickle.dump(vec, fl)
 
 if __name__ == "__main__":

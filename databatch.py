@@ -31,35 +31,35 @@ for i in range(len(label_list)):
     m[label_list[i]] = i
 
 def get_comment(p1, p2):
-    path = "./data/comment/{}/{}".format(str(p1), str(p2))
+    path = "/home/data/ljz/data/comment/{}/{}".format(str(p1), str(p2))
     with open(path, "rb") as f:
         comment = pickle.load(f)
     return (comment.clist, len(comment.clist))
 
 def get_filename(p1):
-    path = "./data/comment/{}".format(str(p1))
+    path = "/home/data/ljz/data/comment/{}".format(str(p1))
     for r, d, f in os.walk(path):
         return f
 
 def get_new_comment(p1, p2):
-    path = "./data/comment_new/{}/{}".format(str(p1), str(p2))
+    path = "/home/data/ljz/data/comment_new/{}/{}".format(str(p1), str(p2))
     with open(path, "rb") as f:
         comment = pickle.load(f)
     return (comment.clist, len(comment.clist))
 
 def get_new_filename(p1):
-    path = "./data/comment_new/{}".format(str(p1))
+    path = "/home/data/ljz/data/comment_new/{}".format(str(p1))
     for r, d, f in os.walk(path):
         return f
 
 def get_mince_comment(p1, p2):
-    path = "./data/comment_mince/{}/{}".format(str(p1), str(p2))
+    path = "/home/data/ljz/data/comment_mince/{}/{}".format(str(p1), str(p2))
     with open(path, "rb") as f:
         comment = pickle.load(f)
     return (comment.clist, len(comment.clist))
 
 def get_mince_filename(p1):
-    path = "./data/comment_mince/{}".format(str(p1))
+    path = "/home/data/ljz/data/comment_mince/{}".format(str(p1))
     for r, d, f in os.walk(path):
         return f
 
