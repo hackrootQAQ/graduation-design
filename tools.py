@@ -103,6 +103,7 @@ def gen_vedio_vector():
     bc = BertClient(check_length = False)
     _vedio, _ = databatch.cut_two_parts(0)
     m = {}; num = 0
+    """
     for L1, f in _vedio:
         tmpC, tmpL = databatch.get_new_comment(L1, f)
         sens = [comment.content for comment in tmpC]
@@ -110,7 +111,16 @@ def gen_vedio_vector():
         m[f] = bx.mean(0)
         num += 1
         print("{}/{}".format(str(num), str(len(_vedio))))
-    with open("./data/comment_new/vedio_vector_svm", "wb") as f:
+    """
+    for L1, f in _vedio:
+        tempC, tmpL = databatch.get_new_comment(L1, f)
+        tmpC = databatch.zoom(tmpC, databatch.sz)
+        sens = [comment.content for comment in tmpC]
+        m[f] = bc.encode(sens)
+        num += 1
+        break
+        print("{}/{}".format(str(num), str(len(_vedio))))
+    with open("./data/comment_new/vedio_vector0", "wb") as f:
         pickle.dump(m, f)
 
 if __name__ == "__main__":
