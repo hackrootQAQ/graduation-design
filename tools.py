@@ -118,7 +118,6 @@ def gen_vedio_vector():
         sens = [comment.content for comment in tmpC]
         m[f] = bc.encode(sens)
         num += 1
-        break
         print("{}/{}".format(str(num), str(len(_vedio))))
     with open("./data/comment_new/vedio_vector0", "wb") as f:
         pickle.dump(m, f)
