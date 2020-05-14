@@ -143,6 +143,7 @@ def get_batch(batch_size, D = None):
             tmpC, tmpL = get_new_comment(L1, f)
             ret.append((zoom(tmpC, sz), m[L1]))
             now = (now + 1) % len(D)
+            if now == 0: random.shuffle(D)
         yield ret, fr
 
 def get_raw_batch(batch_size, D = None):
@@ -154,6 +155,7 @@ def get_raw_batch(batch_size, D = None):
             tmpC, tmpL = get_new_comment(L1, f)
             ret.append((tmpC, m[L1]))
             now = (now + 1) % len(D)
+            if now == 0: random.shuffle(D)
         yield ret, fr
 
 if __name__ == "__main__":
