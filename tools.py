@@ -113,7 +113,7 @@ def gen_vedio_vector():
         print("{}/{}".format(str(num), str(len(_vedio))))
     """
     for L1, f in _vedio:
-        tempC, tmpL = databatch.get_new_comment(L1, f)
+        tmpC, tmpL = databatch.get_new_comment(L1, f)
         tmpC = databatch.zoom(tmpC, databatch.sz)
         sens = [comment.content for comment in tmpC]
         m[f] = bc.encode(sens)
