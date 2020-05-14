@@ -114,12 +114,12 @@ def gen_vedio_vector():
     """
     for L1, f in _vedio:
         tmpC, tmpL = databatch.get_new_comment(L1, f)
-        tmpC = databatch.zoom(tmpC, databatch.sz)
+        #tmpC = databatch.zoom(tmpC, databatch.sz)
         sens = [comment.content for comment in tmpC]
         vec = bc.encode(sens)
         num += 1
         print("{}/{}".format(str(num), str(len(_vedio))))
-        with open("/home/data/ljz/data/comment_new/vedio_vector1/{}".format(str(f)), "wb") as fl:
+        with open("/home/data/ljz/data/comment_new/vedio_vector0/{}".format(str(f)), "wb") as fl:
             pickle.dump(vec, fl)
 
 if __name__ == "__main__":
