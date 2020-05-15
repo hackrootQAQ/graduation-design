@@ -56,6 +56,7 @@ if __name__ == "__main__":
     test_Y = np.array(test_Y)
 
     clf = SVC()
-    print(len(train_X), len(train_Y))
-    clf.fit(train_X[:100], train_Y[:100])
+    print(train_X.shape)
+    print(train_Y.shape)
+    clf.fit(train_X, train_Y)
     print("acc %s" % clf.score(test_X, test_Y))
