@@ -13,7 +13,6 @@ class CONFIG(object):
         self.lr_step = config_dic["lr_step"]
         self.max_steps = config_dic["max_steps"]
         self.test_interval = config_dic["test_interval"]
-        self.test_size = config_dic["test_size"]
         self.attention = config_dic["attention"]
 
 class CONFIG_B(object):
@@ -27,10 +26,3 @@ class CONFIG_B(object):
         self.lr  = config_dic["lr"]
         self.max_steps = config_dic["max_steps"]
         self.test_interval = config_dic["test_interval"]
-        self.test_size = config_dic["test_size"]
-
-class CONFIG_S(object):
-    def __init__(self):
-        with open("config_svm.json", "r") as f:
-            config_dic = json.load(f)
-        self.test_size = config_dic["test_size"]

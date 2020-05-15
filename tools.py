@@ -122,12 +122,24 @@ def gen_vedio_vector():
         with open("/home/data/ljz/data/comment_new/vedio_vector0/{}".format(str(f)), "wb") as fl:
             pickle.dump(vec, fl)
 
+def divide_train_test(scale = 0.08):
+    _train, _test = [], []
+    for L1, L2 in databatch.relational_table.items():
+        fn = databatch.get_new_filename(L1)
+        num = int(len(fn) * scale)
+        _train.extend([(f, L1) for f in fn[:-num]])
+        _test.extend([(f, L1) for f in fn[-num:]])
+    print(len(_train), len(_test))
+    with open("./test", "wb") as fl: pickle.dump(_test, fl)
+    with open("./train", "wb") as fl: pickle.dump(_train, fl)
+
 if __name__ == "__main__":
     #read_new_data(119, 7439521, _out = "out.txt")
     #del_data()
     #find_zero()
     #mince()
-    gen_vedio_vector()
+    #gen_vedio_vector()
+    divide_train_test()
     """
     with open("./data/comment_new/vedio_vector", "rb") as f:
         comment = pickle.load(f)

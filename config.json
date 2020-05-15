@@ -8,6 +8,6 @@
     "lr_step": 800,
     "max_steps": 20000,
     "test_interval": 2000,
-    "test_size": 4096,
+    "test_size": 0.08,
     "attention": false
 }

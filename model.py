@@ -4,6 +4,7 @@ from bert_serving.client import BertClient
 import define
 import numpy as np
 import config
+import pickle 
 
 CFG = config.CONFIG()
 bc = BertClient(check_length = False)
@@ -48,6 +49,7 @@ def res_block(input, input_channel_num, output_channel_num, name, downsize = Fal
             h_c2_relu = tf.nn.relu6(h_c2_add, name = "h_c2_relu")
         return h_c2_relu
 
+"""
 def get_sentences_vector(batch_size = CFG.batch_size, D = None):
     G = databatch.get_batch(batch_size, D)
     
@@ -59,6 +61,7 @@ def get_sentences_vector(batch_size = CFG.batch_size, D = None):
             sens = [comment.content for comment in items[0]]
             x.append(bc.encode(sens))
         yield x, y, fr
+"""
 
 if __name__ == "__main__":
     input_X = tf.placeholder(tf.float32, 
@@ -114,8 +117,9 @@ if __name__ == "__main__":
     tf.train.start_queue_runners()
     saver = tf.train.Saver(max_to_keep = 0)
     
-    train_D, test_D = databatch.cut_two_parts(CFG.test_size)
-    S_train = get_sentences_vector(batch_size = CFG.batch_size, D = train_D)
+    with open("./train", "rb") as f: train_D = pickle.load(f)
+    with open("./test", "rb") as f: test_D = pickle.load(f)
+    S_train = databatch.get_batch(batch_size = CFG.batch_size, D = train_D)
         
     for step in range(CFG.max_steps):
         X, Y, fr = next(S_train)
@@ -134,7 +138,7 @@ if __name__ == "__main__":
             print("PASS")
         
         if (step + 1) % CFG.test_interval == 0:
-            S_test = get_sentences_vector(batch_size = CFG.batch_size, D = test_D)
+            S_test = databatch.get_batch(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
                 X, Y, fr = next(S_test)

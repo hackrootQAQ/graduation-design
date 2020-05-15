@@ -49,6 +49,7 @@ def get_new_comment(p1, p2):
 
 def get_new_filename(p1):
     path = "/home/data/ljz/data/comment_new/{}".format(str(p1))
+    if not os.path.exists(path): path = "./data/comment_new/{}".format(str(p1))
     for r, d, f in os.walk(path):
         return f
 
@@ -62,6 +63,16 @@ def get_mince_filename(p1):
     path = "/home/data/ljz/data/comment_mince/{}".format(str(p1))
     for r, d, f in os.walk(path):
         return f
+
+def get_raw_vector(p):
+    path = "/home/data/ljz/data/vedio_vector0/{}".format(str(p))
+    with open(path, "rb") as f:
+        return pickle.load(f)
+
+def get_new_vector(p):
+    path = "/home/data/ljz/data/vedio_vector1/{}".format(str(p))
+    with open(path, "rb") as f:
+        return pickle.load(f)
 
 def expansion(urtext, sz):
     length = len(urtext); times = sz // length
@@ -134,6 +145,7 @@ def cut_two_parts(test_size):
 """
 
 sz = 768
+"""
 def get_batch(batch_size, D = None):
     now = 0
     while True:
@@ -145,18 +157,19 @@ def get_batch(batch_size, D = None):
             now = (now + 1) % len(D)
             if now == 0: random.shuffle(D)
         yield ret, fr
+"""
 
-def get_raw_batch(batch_size, D = None):
+def get_batch(batch_size, D = None):
     now = 0
     while True:
-        ret = []; fr = []
+        _X = []; _Y = []; fr = []
         for i in range(batch_size):
-            L1, f = D[now]; fr.append(D[now])
-            tmpC, tmpL = get_new_comment(L1, f)
-            ret.append((tmpC, m[L1]))
+            f, L1 = D[now]; fr.append(D[now])
+            _X.append(get_new_vector(f))
+            _Y.append(m[L1])
             now = (now + 1) % len(D)
             if now == 0: random.shuffle(D)
-        yield ret, fr
+        yield _X, _Y, fr
 
 if __name__ == "__main__":
     pass

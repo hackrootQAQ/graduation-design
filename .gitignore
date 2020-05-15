@@ -1,6 +1,7 @@
 data/
 paper/
 paper-reading/
+paper-writing/
 __pycache__/
 save/
 *.txt
