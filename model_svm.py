@@ -50,5 +50,6 @@ if __name__ == "__main__":
         test_X.append(vedio_vector[f])
         test_Y.append(m[L1])
     clf = SVC()
+    print(len(train_X), print(train_Y))
     clf.fit(train_X[:100], train_Y[:100])
     print("acc %s" % clf.score(test_X, test_Y))
