@@ -49,6 +49,12 @@ if __name__ == "__main__":
     for f, L1 in test_D:
         test_X.append(vedio_vector[f])
         test_Y.append(m[L1])
+    
+    train_X = np.array(train_X)
+    train_Y = np.array(train_Y)
+    test_X = np.array(test_X)
+    test_Y = np.array(test_Y)
+
     clf = SVC()
     print(len(train_X), len(train_Y))
     clf.fit(train_X[:100], train_Y[:100])
