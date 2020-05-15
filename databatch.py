@@ -65,12 +65,12 @@ def get_mince_filename(p1):
         return f
 
 def get_raw_vector(p):
-    path = "/home/data/ljz/data/vedio_vector0/{}".format(str(p))
+    path = "/home/data/ljz/data/comment_new/vedio_vector0/{}".format(str(p))
     with open(path, "rb") as f:
         return pickle.load(f)
 
 def get_new_vector(p):
-    path = "/home/data/ljz/data/vedio_vector1/{}".format(str(p))
+    path = "/home/data/ljz/data/comment_new/vedio_vector1/{}".format(str(p))
     with open(path, "rb") as f:
         return pickle.load(f)
 
