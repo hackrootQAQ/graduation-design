@@ -1,14 +1,8 @@
 import pickle
-from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV
-from bert_serving.client import BertClient
 import numpy as np
 import databatch
 import config
-
-CFG = config.CONFIG_S()
-bc = BertClient(check_length = False)
+from thundersvm import SVC
 
 relational_table = {
     1   : [24, 25, 47, 27],
@@ -30,6 +24,7 @@ for L1, L2 in relational_table.items():
 for i in range(len(label_list)):
     m[label_list[i]] = i
 
+"""
 def svm_c(x_train, x_test, y_train, y_test):
     svc = SVC(kernel = "rbf", class_weight = "balanced")
     c_range = np.logspace(-5, 15, 11, base = 2)
@@ -39,17 +34,21 @@ def svm_c(x_train, x_test, y_train, y_test):
     clf = grid.fit(x_train, y_train)
     score = grid.score(x_test, y_test)
     print("acc %s" % score)
+"""
 
 if __name__ == "__main__":
     with open("./data/comment_new/vedio_vector_svm", "rb") as f:
         vedio_vector = pickle.load(f)
-    train_D, test_D = databatch.cut_two_parts(CFG.test_size)
+    with open("./train", "rb") as f: train_D = pickle.load(f)
+    with open("./test", "rb") as f: test_D = pickle.load(f)
     train_X = []; train_Y = []
-    for L1, f in train_D:
+    for f, L1 in train_D:
         train_X.append(vedio_vector[f])
         train_Y.append(m[L1])
     test_X = []; test_Y = []
-    for L1, f in test_D:
+    for f, L1 in test_D:
         test_X.append(vedio_vector[f])
         test_Y.append(m[L1])
-    svm_c(train_X, test_X, train_Y, test_Y)
+    clf = SVC()
+    clf.fit(train_X[:100], train_Y[:100])
+    print("acc %s" % clf.score(test_X, test_Y))
