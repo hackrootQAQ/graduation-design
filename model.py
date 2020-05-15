@@ -1,13 +1,11 @@
 import tensorflow as tf
 import databatch
-from bert_serving.client import BertClient
 import define
 import numpy as np
 import config
 import pickle 
 
 CFG = config.CONFIG()
-bc = BertClient(check_length = False)
 
 def init_w(s, name = None):
     return tf.Variable(tf.truncated_normal(shape = s, stddev = 0.1), name = name)
