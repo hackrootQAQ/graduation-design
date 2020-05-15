@@ -169,6 +169,8 @@ def get_batch(batch_size, D = None):
             _Y.append(m[L1])
             now = (now + 1) % len(D)
             if now == 0: random.shuffle(D)
+        print(_X[0])
+        print(_Y)
         yield _X, _Y, fr
 
 if __name__ == "__main__":
