@@ -162,15 +162,13 @@ def get_batch(batch_size, D = None):
 def get_batch(batch_size, D = None):
     now = 0
     while True:
+        if now == 0: random.shuffle(D)
         _X = []; _Y = []; fr = []
         for i in range(batch_size):
             f, L1 = D[now]; fr.append(D[now])
             _X.append(get_new_vector(f))
             _Y.append(m[L1])
             now = (now + 1) % len(D)
-            if now == 0: random.shuffle(D)
-        print(_X[0])
-        print(_Y)
         yield _X, _Y, fr
 
 if __name__ == "__main__":
