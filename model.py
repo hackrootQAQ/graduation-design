@@ -116,51 +116,52 @@ if __name__ == "__main__":
             update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
             with tf.control_dependencies(update_ops):
                 train_op = tf.train.AdamOptimizer(lr).minimize(loss, global_step = global_step)
-        sess = tf.InteractiveSession()
-        tf.global_variables_initializer().run()
-        tf.train.start_queue_runners()
-        saver = tf.train.Saver(max_to_keep = 0)
+                
+    sess = tf.InteractiveSession()
+    tf.global_variables_initializer().run()
+    tf.train.start_queue_runners()
+    saver = tf.train.Saver(max_to_keep = 0)
+    
+    with open("./train", "rb") as f: train_D = pickle.load(f)
+    with open("./test", "rb") as f: test_D = pickle.load(f)
+    S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
         
-        with open("./train", "rb") as f: train_D = pickle.load(f)
-        with open("./test", "rb") as f: test_D = pickle.load(f)
-        S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
-            
-        for step in range(CFG.max_steps):
-            X, Y, fr = next(S_train)
-            
-            try:
-                X = np.array(X)
-                X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-                l, a, _ = sess.run(
-                    [loss, acc, train_op],
-                    feed_dict = {input_X : X, input_Y : Y}
-                )
-                print("step %d, loss %.4f, acc %.4f" % (step, l, a))
-            except:
-                with open("wrong_data", "a+") as f:
-                    f.write(str(fr) + "\n")
-                print("PASS")
-            
-            if (step + 1) % CFG.test_interval == 0:
-                S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
-                predict_a, predict_l = 0, 0
-                for i in range(len(test_D) // CFG.batch_size):
-                    X, Y, fr = next(S_test)
-                    
-                    try:
-                        X = np.array(X)
-                        X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-                        l, a = sess.run(
-                            [loss, acc],
-                            feed_dict = {input_X : X, input_Y : Y}
-                        )
-                        predict_a += a; predict_l += l
-                    except: 
-                        with open("wrong_data", "a+") as f:
-                            f.write(str(fr) + "\n")
-                            print("PASS")
-                    
-                num = (len(test_D) // CFG.batch_size)
-                print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
-        saver.save(sess, "./save/{}".format(CFG.model_name), global_step = global_step)
+    for step in range(CFG.max_steps):
+        X, Y, fr = next(S_train)
+        
+        try:
+            X = np.array(X)
+            X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+            l, a, _ = sess.run(
+                [loss, acc, train_op],
+                feed_dict = {input_X : X, input_Y : Y}
+            )
+            print("step %d, loss %.4f, acc %.4f" % (step, l, a))
+        except:
+            with open("wrong_data", "a+") as f:
+                f.write(str(fr) + "\n")
+            print("PASS")
+        
+        if (step + 1) % CFG.test_interval == 0:
+            S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
+            predict_a, predict_l = 0, 0
+            for i in range(len(test_D) // CFG.batch_size):
+                X, Y, fr = next(S_test)
+                
+                try:
+                    X = np.array(X)
+                    X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+                    l, a = sess.run(
+                        [loss, acc],
+                        feed_dict = {input_X : X, input_Y : Y}
+                    )
+                    predict_a += a; predict_l += l
+                except: 
+                    with open("wrong_data", "a+") as f:
+                        f.write(str(fr) + "\n")
+                        print("PASS")
+                
+            num = (len(test_D) // CFG.batch_size)
+            print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
+    saver.save(sess, "./save/{}".format(CFG.model_name), global_step = global_step)
         
