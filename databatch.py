@@ -200,7 +200,6 @@ def lessen_mean(urvec, sz):
                 now = 0; a -= 1 
                 assert len(tmp) == interval
                 ret.append(np.array(tmp).mean(0))
-                print(ret[-1])
                 tmp = []
         else:
             if now == interval + 1: 
