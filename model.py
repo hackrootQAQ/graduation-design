@@ -6,6 +6,7 @@ import config
 import pickle 
 
 CFG = config.CONFIG()
+CFG.Print()
 
 def init_w(s, name = None):
     return tf.Variable(tf.truncated_normal(shape = s, stddev = 0.1), name = name)
@@ -156,5 +157,5 @@ if __name__ == "__main__":
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
-    saver.save(sess, "./save/model", global_step = global_step)
+    saver.save(sess, "./save/{}".format(CFG.model_name), global_step = global_step)
         

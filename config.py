@@ -14,6 +14,11 @@ class CONFIG(object):
         self.max_steps = config_dic["max_steps"]
         self.test_interval = config_dic["test_interval"]
         self.attention = config_dic["attention"]
+        self.model_name = config_dic["model_name"]
+    
+    def Print(self):
+        for name, value in vars(self).items():
+            print("{}: {}".format(name, value))
 
 class CONFIG_B(object):
     def __init__(self):
