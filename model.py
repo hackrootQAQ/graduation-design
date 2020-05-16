@@ -6,7 +6,7 @@ import config
 import pickle 
 import os
 
-os.environ["PYTHONUNBUFFERED"] = 1
+os.environ["PYTHONUNBUFFERED"] = "1"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 CFG = config.CONFIG()
 CFG.Print()
