@@ -198,12 +198,15 @@ def lessen_mean(urvec, sz):
         if a > 0:
             if now == interval: 
                 now = 0; a -= 1 
+                print(len(tmp))
                 ret.append(np.array(tmp).mean())
+                tmp = []
             else: tmp.append(urvec[i])
         else:
             if now == interval + 1: 
                 now = 0; b -= 1 
                 ret.append(np.array(tmp).mean())
+                tmp = []
             else: tmp.append(urvec[i])
     assert len(ret) == sz
     return ret
