@@ -4,7 +4,10 @@ import define
 import numpy as np
 import config
 import pickle 
+import os
 
+os.environ["PYTHONUNBUFFERED"] = 1
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 CFG = config.CONFIG()
 CFG.Print()
 
@@ -63,99 +66,101 @@ def get_sentences_vector(batch_size = CFG.batch_size, D = None):
 """
 
 if __name__ == "__main__":
-    input_X = tf.placeholder(tf.float32, 
-        [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1],
-        name = "input_comment")
-    input_Y = tf.placeholder(tf.int64,
-        [CFG.batch_size],
-        name = "input_label")
+    mirrored_strategy = tf.distribute.MirroredStrategy()
+    with mirrored_strategy.scope():
+        input_X = tf.placeholder(tf.float32, 
+            [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1],
+            name = "input_comment")
+        input_Y = tf.placeholder(tf.int64,
+            [CFG.batch_size],
+            name = "input_label")
 
-    #192 * 192
-    conv1_x_1 = res_block(input_X, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention)
-    conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2")
+        #192 * 192
+        conv1_x_1 = res_block(input_X, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention)
+        conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2")
 
-    #48 * 48
-    conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True, attention = CFG.attention)
-    conv2_x_2 = res_block(conv2_x_1, 16, 16, "conv2_x_2")
+        #48 * 48
+        conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True, attention = CFG.attention)
+        conv2_x_2 = res_block(conv2_x_1, 16, 16, "conv2_x_2")
 
-    #12 * 12
-    conv3_x_1 = res_block(conv2_x_2, 16, 64, "conv3_x_1", downsize = True, attention = CFG.attention)
-    conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2")
-    conv3_x_p = tf.nn.avg_pool(value = conv3_x_2,
-        ksize = [1, 12, 12, 1],
-        strides = [1, 12, 12, 1],
-        padding = "SAME"
-    )
+        #12 * 12
+        conv3_x_1 = res_block(conv2_x_2, 16, 64, "conv3_x_1", downsize = True, attention = CFG.attention)
+        conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2")
+        conv3_x_p = tf.nn.avg_pool(value = conv3_x_2,
+            ksize = [1, 12, 12, 1],
+            strides = [1, 12, 12, 1],
+            padding = "SAME"
+        )
 
-    ret = tf.reshape(conv3_x_p, [-1, 64])
-    W_f1 = init_w([64, 12], name = "W_f1")
-    b_f1 = init_b([12], name = "b_f1")
-    out_ = tf.add(tf.matmul(ret, W_f1), b_f1)
+        ret = tf.reshape(conv3_x_p, [-1, 64])
+        W_f1 = init_w([64, 12], name = "W_f1")
+        b_f1 = init_b([12], name = "b_f1")
+        out_ = tf.add(tf.matmul(ret, W_f1), b_f1)
 
-    loss_list = tf.nn.sparse_softmax_cross_entropy_with_logits(
-        labels = input_Y,
-        logits = out_)
-    loss = tf.reduce_mean(loss_list)
-    predict_ans = tf.argmax(out_, 1)
-    acc = tf.reduce_mean(tf.cast(tf.equal(predict_ans, input_Y), tf.float64))
+        loss_list = tf.nn.sparse_softmax_cross_entropy_with_logits(
+            labels = input_Y,
+            logits = out_)
+        loss = tf.reduce_mean(loss_list)
+        predict_ans = tf.argmax(out_, 1)
+        acc = tf.reduce_mean(tf.cast(tf.equal(predict_ans, input_Y), tf.float64))
 
-    global_step = tf.Variable(0, trainable = False)
-    lr = tf.train.exponential_decay(
-        learning_rate = CFG.lr_base,
-        global_step = global_step,
-        decay_steps = CFG.lr_step,
-        decay_rate = CFG.lr_decay,
-        staircase = True
-    )
-    with tf.name_scope("train_op"):
-        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        with tf.control_dependencies(update_ops):
-            train_op = tf.train.AdamOptimizer(lr).minimize(loss, global_step = global_step)
-    sess = tf.InteractiveSession()
-    tf.global_variables_initializer().run()
-    tf.train.start_queue_runners()
-    saver = tf.train.Saver(max_to_keep = 0)
-    
-    with open("./train", "rb") as f: train_D = pickle.load(f)
-    with open("./test", "rb") as f: test_D = pickle.load(f)
-    S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
+        global_step = tf.Variable(0, trainable = False)
+        lr = tf.train.exponential_decay(
+            learning_rate = CFG.lr_base,
+            global_step = global_step,
+            decay_steps = CFG.lr_step,
+            decay_rate = CFG.lr_decay,
+            staircase = True
+        )
+        with tf.name_scope("train_op"):
+            update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+            with tf.control_dependencies(update_ops):
+                train_op = tf.train.AdamOptimizer(lr).minimize(loss, global_step = global_step)
+        sess = tf.InteractiveSession()
+        tf.global_variables_initializer().run()
+        tf.train.start_queue_runners()
+        saver = tf.train.Saver(max_to_keep = 0)
         
-    for step in range(CFG.max_steps):
-        X, Y, fr = next(S_train)
-        
-        try:
-            X = np.array(X)
-            X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-            l, a, _ = sess.run(
-                [loss, acc, train_op],
-                feed_dict = {input_X : X, input_Y : Y}
-            )
-            print("step %d, loss %.4f, acc %.4f" % (step, l, a))
-        except:
-            with open("wrong_data", "a+") as f:
-                f.write(str(fr) + "\n")
-            print("PASS")
-        
-        if (step + 1) % CFG.test_interval == 0:
-            S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
-            predict_a, predict_l = 0, 0
-            for i in range(len(test_D) // CFG.batch_size):
-                X, Y, fr = next(S_test)
-                
-                try:
-                    X = np.array(X)
-                    X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-                    l, a = sess.run(
-                        [loss, acc],
-                        feed_dict = {input_X : X, input_Y : Y}
-                    )
-                    predict_a += a; predict_l += l
-                except: 
-                    with open("wrong_data", "a+") as f:
-                        f.write(str(fr) + "\n")
-                        print("PASS")
-                
-            num = (len(test_D) // CFG.batch_size)
-            print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
-    saver.save(sess, "./save/{}".format(CFG.model_name), global_step = global_step)
+        with open("./train", "rb") as f: train_D = pickle.load(f)
+        with open("./test", "rb") as f: test_D = pickle.load(f)
+        S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
+            
+        for step in range(CFG.max_steps):
+            X, Y, fr = next(S_train)
+            
+            try:
+                X = np.array(X)
+                X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+                l, a, _ = sess.run(
+                    [loss, acc, train_op],
+                    feed_dict = {input_X : X, input_Y : Y}
+                )
+                print("step %d, loss %.4f, acc %.4f" % (step, l, a))
+            except:
+                with open("wrong_data", "a+") as f:
+                    f.write(str(fr) + "\n")
+                print("PASS")
+            
+            if (step + 1) % CFG.test_interval == 0:
+                S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
+                predict_a, predict_l = 0, 0
+                for i in range(len(test_D) // CFG.batch_size):
+                    X, Y, fr = next(S_test)
+                    
+                    try:
+                        X = np.array(X)
+                        X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+                        l, a = sess.run(
+                            [loss, acc],
+                            feed_dict = {input_X : X, input_Y : Y}
+                        )
+                        predict_a += a; predict_l += l
+                    except: 
+                        with open("wrong_data", "a+") as f:
+                            f.write(str(fr) + "\n")
+                            print("PASS")
+                    
+                num = (len(test_D) // CFG.batch_size)
+                print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
+        saver.save(sess, "./save/{}".format(CFG.model_name), global_step = global_step)
         
