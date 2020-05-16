@@ -118,7 +118,7 @@ if __name__ == "__main__":
     
     with open("./train", "rb") as f: train_D = pickle.load(f)
     with open("./test", "rb") as f: test_D = pickle.load(f)
-    S_train = databatch.get_batch(batch_size = CFG.batch_size, D = train_D)
+    S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
         
     for step in range(CFG.max_steps):
         X, Y, fr = next(S_train)
@@ -137,7 +137,7 @@ if __name__ == "__main__":
             print("PASS")
         
         if (step + 1) % CFG.test_interval == 0:
-            S_test = databatch.get_batch(batch_size = CFG.batch_size, D = test_D)
+            S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
                 X, Y, fr = next(S_test)
