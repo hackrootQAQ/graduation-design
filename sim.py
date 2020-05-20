@@ -1,4 +1,4 @@
-import numpy as np
+import cupy as np
 import pickle
 import databatch
 
@@ -25,5 +25,6 @@ if __name__ == "__main__":
         B = np.array(B).mean(0)
         ret_d.append(dist(A, B))
         ret_c.append(cossim(A, B))
+        if len(ret_d) % 10 == 0: print(len(ret_d))
     print(min(ret_d), max(ret_d), np.array(ret_d).mean())
     print(min(ret_c), max(ret_c), np.array(ret_c).mean())
