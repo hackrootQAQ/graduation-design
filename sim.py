@@ -7,6 +7,9 @@ def dist(A, B):
     return 1.0 / (1.0 + dist)
 
 def cossim(A, B):
+    print(A.shape)
+    print(B.shape)
+    print(A.T.shape)
     num = float(A.T * B)
     denom = np.linalg.norm(A) * np.linalg.norm(B)
     cos = num / denom
