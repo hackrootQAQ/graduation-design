@@ -136,7 +136,7 @@ if __name__ == "__main__":
             feed_dict = {input_X : X, input_Y : Y}
         )
         l, a = sess.run(
-            [l, a],
+            [loss, acc],
             feed_dict = {input_X : X_, input_Y : Y_}
         )
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
