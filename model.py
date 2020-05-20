@@ -142,7 +142,7 @@ if __name__ == "__main__":
             )
             print("step %d, loss %.4f, acc %.4f" % (step, l, a))
             ret_acc.append(a); max_acc = max(acc, max_acc)
-            if max(ret[(min(len(ret), -10)):]) < max_acc: break
+            if max(ret[-min(len(ret), 10):]) < max_acc: break
         except:
             with open("wrong_data", "a+") as f:
                 f.write(str(fr) + "\n")
