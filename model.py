@@ -129,25 +129,19 @@ if __name__ == "__main__":
         X, Y, fr = next(S_train)
         X_, Y_, fr_ = next(S_train)
 
-        try:
-            X = np.array(X)
-            X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-            _ = sess.run(
-                train_op,
-                feed_dict = {input_X : X, input_Y : Y}
-            )
-            l, a = sess.run(
-                [l, a],
-                feed_dict = {input_X : X_, input_Y : Y_}
-            )
-            print("step %d, loss %.4f, acc %.4f" % (step, l, a))
-            ret_acc.append(a); max_acc = max(acc, max_acc)
-            print(ret[-min(len(ret), 10):])
-            if max(ret[-min(len(ret), 10):]) < max_acc: break
-        except:
-            with open("wrong_data", "a+") as f:
-                f.write(str(fr) + "\n")
-            print("PASS")
+        X = np.array(X)
+        X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+        _ = sess.run(
+            train_op,
+            feed_dict = {input_X : X, input_Y : Y}
+        )
+        l, a = sess.run(
+            [l, a],
+            feed_dict = {input_X : X_, input_Y : Y_}
+        )
+        print("step %d, loss %.4f, acc %.4f" % (step, l, a))
+        ret_acc.append(a); max_acc = max(acc, max_acc)
+        if max(ret[-min(len(ret), 10):]) < max_acc: break
         
     S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
     predict_a, predict_l = 0, 0
