@@ -3,6 +3,7 @@ paper/
 paper-reading/
 paper-writing/
 __pycache__/
+comment*
 save/
 *.txt
 *.zip

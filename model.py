@@ -123,43 +123,50 @@ if __name__ == "__main__":
     with open("./train", "rb") as f: train_D = pickle.load(f)
     with open("./test", "rb") as f: test_D = pickle.load(f)
     S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
-        
+    ret_acc = []; max_acc = 0
+
     for step in range(CFG.max_steps):
         X, Y, fr = next(S_train)
-        
+        X_, Y_, fr_ = next(S_train)
+
         try:
             X = np.array(X)
             X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-            l, a, _ = sess.run(
-                [loss, acc, train_op],
+            _ = sess.run(
+                train_op,
                 feed_dict = {input_X : X, input_Y : Y}
             )
+            l, a = sess.run(
+                [l, a],
+                feed_dict = {input_X : X_, input_Y : Y_}
+            )
             print("step %d, loss %.4f, acc %.4f" % (step, l, a))
+            ret_acc.append(a); max_acc = max(acc, max_acc)
+            if max(ret[(min(len(ret), -10)):]) < max_acc: break
         except:
             with open("wrong_data", "a+") as f:
                 f.write(str(fr) + "\n")
             print("PASS")
         
-        if (step + 1) % CFG.test_interval == 0:
-            S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
-            predict_a, predict_l = 0, 0
-            for i in range(len(test_D) // CFG.batch_size):
-                X, Y, fr = next(S_test)
-                
-                try:
-                    X = np.array(X)
-                    X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-                    l, a = sess.run(
-                        [loss, acc],
-                        feed_dict = {input_X : X, input_Y : Y}
-                    )
-                    predict_a += a; predict_l += l
-                except: 
-                    with open("wrong_data", "a+") as f:
-                        f.write(str(fr) + "\n")
-                        print("PASS")
-                
-            num = (len(test_D) // CFG.batch_size)
-            print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
+    S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
+    predict_a, predict_l = 0, 0
+    for i in range(len(test_D) // CFG.batch_size):
+        X, Y, fr = next(S_test)
+
+        try:
+            X = np.array(X)
+            X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+            l, a = sess.run(
+                [loss, acc],
+                feed_dict = {input_X : X, input_Y : Y}
+            )
+            predict_a += a; predict_l += l
+        except: 
+            with open("wrong_data", "a+") as f:
+                f.write(str(fr) + "\n")
+                print("PASS")
+        
+    num = (len(test_D) // CFG.batch_size)
+    print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
     saver.save(sess, "./save/{}".format(CFG.model_name), global_step = global_step)
         

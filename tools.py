@@ -123,23 +123,35 @@ def gen_vedio_vector():
             pickle.dump(vec, fl)
 
 def divide_train_test(scale = 0.08):
-    _train, _test = [], []
+    #_train, _test = [], []
     for L1, L2 in databatch.relational_table.items():
         fn = databatch.get_new_filename(L1)
         num = int(len(fn) * scale)
-        _train.extend([(f, L1) for f in fn[:-num]])
-        _test.extend([(f, L1) for f in fn[-num:]])
-    print(len(_train), len(_test))
-    with open("./test", "wb") as fl: pickle.dump(_test, fl)
-    with open("./train", "wb") as fl: pickle.dump(_train, fl)
+        print("{}: train {}".format(str(L1), str(len(fn[:-num]))))
+        print("{}: test {}".format(str(L1), str(len(fn[-num:]))))
+        #_train.extend([(f, L1) for f in fn[:-num]])
+        #_test.extend([(f, L1) for f in fn[-num:]])
+    #print(len(_train), len(_test))
+    #with open("./test", "wb") as fl: pickle.dump(_test, fl)
+    #with open("./train", "wb") as fl: pickle.dump(_train, fl)
+
+def census():
+    for L1, L2 in databatch.relational_table.items():
+        fn = databatch.get_new_filename(L1)
+        num = 0
+        for f in fn:
+            tmpC, tmpL = databatch.get_comment(L1, f)
+            num += len(tmpC)
+        print(L1, len(fn), num)
 
 if __name__ == "__main__":
-    #read_new_data(119, 7439521, _out = "out.txt")
+    read_new_data(119, 7439521, _out = "out.txt")
     #del_data()
     #find_zero()
     #mince()
     #gen_vedio_vector()
     divide_train_test()
+    #census()
     """
     with open("./data/comment_new/vedio_vector", "rb") as f:
         comment = pickle.load(f)
