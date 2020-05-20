@@ -131,6 +131,8 @@ if __name__ == "__main__":
 
         X = np.array(X)
         X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+        X_ = np.array(X_)
+        X_ = X_.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
         _ = sess.run(
             train_op,
             feed_dict = {input_X : X, input_Y : Y}
