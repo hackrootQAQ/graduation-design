@@ -143,7 +143,7 @@ if __name__ == "__main__":
         )
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         ret_acc.append(a); max_acc = max(a, max_acc)
-        if max(ret[-min(len(ret), 10):]) < max_acc: break
+        if max(ret_acc[-min(len(ret_acc), 10):]) < max_acc: break
         
     S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
     predict_a, predict_l = 0, 0
