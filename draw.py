@@ -137,11 +137,11 @@ def get_distance():
     a = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
     b = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
     c = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
-    for i in range(200):
+    for i in range(50):
         print("\r{}...".format(str(i + 1)), end = "", flush = True)
         tmpC, tmpL = databatch.get_new_comment(f_list[i][0], f_list[i][1])
         l = len(tmpC)
-        if l > 1000: continue
+        if l > 1500: continue
         for i in range(l):
             for j in range(i + 1, l):
                 d, d_tf, d_ti = jaccard_similarity(tmpC[i].content, tmpC[j].content)
@@ -158,9 +158,12 @@ def get_distance():
 
 if __name__ == "__main__":
     #get_num()
-    #draw_1()
+    #draw_1() 
     #get_comment_length()
     #draw_2()
     #get_mean_comment()
     #draw_3()
-    get_distance()
+    #get_distance()
+    s1 = "你在干嘛呢"
+    s2 = "你在干什么呢"
+    print(jaccard_similarity(s1, s2))
