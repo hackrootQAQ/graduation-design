@@ -145,25 +145,26 @@ if __name__ == "__main__":
         ret_loss.append(l); min_loss = min(l, min_loss)
         if min(ret_loss[-min(len(ret_loss), 300):]) > min_loss: break
         
-    S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
-    predict_a, predict_l = 0, 0
-    for i in range(len(test_D) // CFG.batch_size):
-        X, Y, fr = next(S_test)
+        if min(ret_loss[-min(len(ret_loss), 150):]) > min_loss:
+            S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
+            predict_a, predict_l = 0, 0
+            for i in range(len(test_D) // CFG.batch_size):
+                X, Y, fr = next(S_test)
 
-        try:
-            X = np.array(X)
-            X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-            l, a = sess.run(
-                [loss, acc],
-                feed_dict = {input_X : X, input_Y : Y}
-            )
-            predict_a += a; predict_l += l
-        except: 
-            with open("wrong_data", "a+") as f:
-                f.write(str(fr) + "\n")
-                print("PASS")
-        
-    num = (len(test_D) // CFG.batch_size)
-    print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
+                try:
+                    X = np.array(X)
+                    X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+                    l, a = sess.run(
+                        [loss, acc],
+                        feed_dict = {input_X : X, input_Y : Y}
+                    )
+                    predict_a += a; predict_l += l
+                except: 
+                    with open("wrong_data", "a+") as f:
+                        f.write(str(fr) + "\n")
+                        print("PASS")
+                
+            num = (len(test_D) // CFG.batch_size)
+            print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
     saver.save(sess, "./save/{}".format(CFG.model_name), global_step = global_step)
         
