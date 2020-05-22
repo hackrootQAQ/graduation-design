@@ -18,7 +18,9 @@ if __name__ == "__main__":
     D = []
     with open("./train", "rb") as f: D = pickle.load(f)
     with open("./test", "rb") as f: D.extend(pickle.load(f))
+    print(len(D))
     ret_d = []; ret_c = []
+    """
     for f, L1 in D:
         try:
             A = vedio_vector[f]
@@ -28,5 +30,13 @@ if __name__ == "__main__":
             ret_c.append(cossim(A, B))
         except:
             pass
+    """
+    f = 82008182
+    A = vedio_vector[f]
+    B = databatch.get_raw_vector(f)
+    B = np.array(B).mean(0)
+    ret_d.append(dist(A, B))
+    ret_c.append(cossim(A, B))
+
     print(min(ret_d), max(ret_d), np.array(ret_d).mean())
     print(min(ret_c), max(ret_c), np.array(ret_c).mean())
