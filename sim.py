@@ -38,7 +38,7 @@ if __name__ == "__main__":
     B = databatch.get_new_vector(f)
     B = np.array(B).mean(0)
     print(B)
-    B = cp.array(A)
+    B = cp.array(B)
     ret_d.append(cp.asnumpy(dist(A, B)))
     ret_c.append(cp.asnumpy(cossim(A, B)))
 
