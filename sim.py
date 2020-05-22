@@ -17,7 +17,7 @@ def cossim(A, B):
     cos = num / denom
     #return 0.5 + 0.5 * cos
     return cos
-    
+
 if __name__ == "__main__":
     with open("/home/data/ljz/data/comment_new/vedio_vector_svm", "rb") as f:
         vedio_vector = pickle.load(f)
@@ -30,7 +30,8 @@ if __name__ == "__main__":
         A = cp.array(A)
         #B = databatch.get_raw_vector(f)
         #B = np.array(databatch.zoom_mean(B, databatch.sz)).mean(0)
-        
+        B = databatch.get_new_vector(f)
+        B = np.array(B).mean(0)
         B = cp.array(B)
         ret_d.append(cp.asnumpy(mdist(A, B)))
         ret_c.append(cp.asnumpy(cossim(A, B)))
