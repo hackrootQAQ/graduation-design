@@ -23,10 +23,11 @@ if __name__ == "__main__":
         try:
             A = vedio_vector[f]
             B = databatch.get_raw_vector(f)
-            print(f)
             B = np.array(B).mean(0)
             ret_d.append(dist(A, B))
             ret_c.append(cossim(A, B))
+            print(A)
+            print(B)
             #if len(ret_d) % 10 == 0: print(len(ret_d))
             print(ret_d[-1], ret_c[-1])
             if (len(ret_d) == 10): break
