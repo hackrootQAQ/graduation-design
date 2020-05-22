@@ -33,9 +33,13 @@ if __name__ == "__main__":
             pass
     """
     f = "82008182"
-    A = cp.array(vedio_vector[f])
+    A = vedio_vector[f]
+    print(A)
+    A = cp.array(A)
     B = databatch.get_raw_vector(f)
-    B = cp.array(np.array(B).mean(0))
+    B = np.array(B).mean(0)
+    print(B)
+    B = cp.array(A)
     ret_d.append(cp.asnumpy(dist(A, B)))
     ret_c.append(cp.asnumpy(cossim(A, B)))
 
