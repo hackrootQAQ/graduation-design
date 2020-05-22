@@ -33,11 +33,11 @@ def res_block(input, input_channel_num, output_channel_num, name, downsize = Fal
             W_a_tile = tf.tile(W_a_reshape, [s[0], 1, s[2], 1], name = "W_a_tile")
             input = tf.multiply(input, W_a_tile)
 
-        W_c1 = init_w([3, 3, input_channel_num, output_channel_num], name = "W_c1")
+        W_c1 = init_w([3, 1, input_channel_num, output_channel_num], name = "W_c1")
         h_c1 = conv2d(input, W_c1, downsize = downsize, name = "h_c1")
         h_c1_bn = tf.layers.batch_normalization(h_c1, training = training, name = "h_c1_bn")
         h_c1_relu = tf.nn.relu6(h_c1_bn)
-        W_c2 = init_w([3, 3, output_channel_num, output_channel_num], name = "W_c2")
+        W_c2 = init_w([3, 1, output_channel_num, output_channel_num], name = "W_c2")
         h_c2 = conv2d(h_c1_relu, W_c2, name = "h_c2")
         h_c2_bn = tf.layers.batch_normalization(h_c2, training = training, name = "h_c2_bn")
         if input_channel_num == output_channel_num: 
