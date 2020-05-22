@@ -19,7 +19,6 @@ if __name__ == "__main__":
     D = []
     with open("./train", "rb") as f: D = pickle.load(f)
     with open("./test", "rb") as f: D.extend(pickle.load(f))
-    print(len(D))
     ret_d = []; ret_c = []
     """
     for f, L1 in D:
@@ -36,7 +35,7 @@ if __name__ == "__main__":
     A = vedio_vector[f]
     print(A)
     A = cp.array(A)
-    B = databatch.get_raw_vector(f)
+    B = databatch.get_new_vector(f)
     B = np.array(B).mean(0)
     print(B)
     B = cp.array(A)
