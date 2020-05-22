@@ -28,6 +28,7 @@ if __name__ == "__main__":
         B = cp.array(B)
         ret_d.append(cp.asnumpy(dist(A, B)))
         ret_c.append(cp.asnumpy(cossim(A, B)))
+        if len(ret_d) % 10 == 0: print(len(ret_d))
 
     print(min(ret_d), max(ret_d), np.array(ret_d).mean())
     print(min(ret_c), max(ret_c), np.array(ret_c).mean())
