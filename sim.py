@@ -31,7 +31,7 @@ if __name__ == "__main__":
         except:
             pass
     """
-    f = 82008182
+    f = "82008182"
     A = vedio_vector[f]
     B = databatch.get_raw_vector(f)
     B = np.array(B).mean(0)
