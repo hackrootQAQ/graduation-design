@@ -23,8 +23,8 @@ if __name__ == "__main__":
     for f, L1 in D:
         A = vedio_vector[f]
         A = cp.array(A)
-        B = databatch.get_new_vector(f)
-        B = np.array(B).mean(0)
+        B = databatch.get_raw_vector(f)
+        B = np.array(databatch.zoom_mean(B, databatch.sz)).mean(0)
         B = cp.array(B)
         ret_d.append(cp.asnumpy(dist(A, B)))
         ret_c.append(cp.asnumpy(cossim(A, B)))
@@ -32,3 +32,6 @@ if __name__ == "__main__":
 
     print(min(ret_d), max(ret_d), np.array(ret_d).mean())
     print(min(ret_c), max(ret_c), np.array(ret_c).mean())
+
+#0.19517913 1.0 0.8179025
+#0.98712575 1.0 0.9998783
