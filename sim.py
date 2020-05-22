@@ -1,14 +1,15 @@
-import cupy as np
+import cupy as cp
+import numpy as np
 import pickle
 import databatch
 
 def dist(A, B):
-    dist = np.linalg.norm(A - B)
+    dist = cp.linalg.norm(A - B)
     return 1.0 / (1.0 + dist)
 
 def cossim(A, B):
-    num = float(np.sum(A * B))
-    denom = np.linalg.norm(A) * np.linalg.norm(B)
+    num = float(cp.sum(A * B))
+    denom = cp.linalg.norm(A) * cp.linalg.norm(B)
     cos = num / denom
     return 0.5 + 0.5 * cos
 
@@ -32,11 +33,11 @@ if __name__ == "__main__":
             pass
     """
     f = "82008182"
-    A = vedio_vector[f]
+    A = cp.array(vedio_vector[f])
     B = databatch.get_raw_vector(f)
-    B = np.array(B).mean(0)
-    ret_d.append(dist(A, B))
-    ret_c.append(cossim(A, B))
+    B = cp.array(np.array(B).mean(0))
+    ret_d.append(cp.asnumpy(dist(A, B)))
+    ret_c.append(cp.asnumpy(cossim(A, B)))
 
     print(min(ret_d), max(ret_d), np.array(ret_d).mean())
     print(min(ret_c), max(ret_c), np.array(ret_c).mean())
