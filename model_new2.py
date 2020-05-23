@@ -156,7 +156,7 @@ if __name__ == "__main__":
         ret_loss.append(l); min_loss = min(l, min_loss)
         if min(ret_loss[-min(len(ret_loss), 600):]) > min_loss: break
         
-        if min(ret_loss[-min(len(ret_loss), 300):]) > min_loss or min_loss == l:
+        if min(ret_loss[-min(len(ret_loss), 500):]) > min_loss or min_loss == l:
             S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
