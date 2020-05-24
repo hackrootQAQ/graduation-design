@@ -239,8 +239,9 @@ def get_rnn_batch(batch_size, max_length, num_class, eb_size, D = None):
             f, L1 = D[now]
             tmp = get_raw_vector(f); l = tmp.shape[0]
             if l <= max_length:
-                _X.append(np.array([tmp[i] for i in range(l)].extend(
-                    [np.zeros(eb_size) for i in range(max_length - l)])))
+                _X.append([tmp[i] for i in range(l)])
+                _X[-1].extend([np.zeros(eb_size) for i in range(max_length - l)])
+                _X[-1] = np.array(_X[-1])
                 print(_X[-1].shape)
                 _L.append(l)
             else:
