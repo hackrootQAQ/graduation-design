@@ -230,5 +230,23 @@ def get_mean_batch(batch_size, D = None):
             now = (now + 1) % len(D)
         yield _X, _Y, fr
 
+def get_rnn_batch(batch_size, max_length, num_class, eb_size, D = None):
+    now = 0
+    while True:
+        if now == 0: random.shuffle(D)
+        _X = []; _Y = []; _L = []
+        for i in range(batch_size):
+            f, L1 = D[now]
+            tmp = get_raw_vector(f); l = tmp.shape[0]
+            if l <= max_length:
+                _X.append(np.array([tmp[i] for i in range(l)].extend(
+                    [np.zeros(eb_size) for i in range(max_length - l)])))
+                _L.append(l)
+            else:
+                _X.append(np.array([tmp[i] for i in range(max_length)]))
+                _L.append(l)
+            _Y.append(m[L1])
+        yield np.array(_X), np.eye(num_class)[_Y], _L
+
 if __name__ == "__main__":
     pass

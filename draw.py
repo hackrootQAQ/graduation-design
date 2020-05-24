@@ -32,14 +32,38 @@ def draw_1():
     print(mean)
     print(std)
     print(median)
+    print(inp.max())
     x = np.arange(300, 20000, 50)
+    y = normfun(x, mean, std)
+
+    plt.tick_params(labelsize = 12)
+    plt.plot(x, color = 'g', linewidth = 3)
+    plt.hist(inp, bins = 100, color = 'r', alpha = 0.5, rwidth = 0.9, normed = True)
+    font1 = {'family' : 'Fira code', 'weight' : 'bold', 'size' : 14}
+    plt.xlabel('Comment count', font1, labelpad = 6)
+    plt.ylabel('Probability', font1, labelpad = 6)
+    plt.show()
+
+def draw_4():
+    with open("./comment_vedio_num", "rb") as f:
+        ret = pickle.load(f)
+    inp = np.array(ret)
+    mean = inp.mean()
+    std = inp.std()
+    median = np.median(inp)
+    print(mean)
+    print(std)
+    print(median)
+    print(inp.max())
+    print(inp.min())
+    x = np.arange(50, 150000, 50)
     y = normfun(x, mean, std)
 
     plt.tick_params(labelsize = 12)
     plt.plot(x, y, color = 'g', linewidth = 3)
     plt.hist(inp, bins = 100, color = 'r', alpha = 0.5, rwidth = 0.9, normed = True)
     font1 = {'family' : 'Fira code', 'weight' : 'bold', 'size' : 14}
-    plt.xlabel('Comment count', font1, labelpad = 6)
+    plt.xlabel('Charactor count', font1, labelpad = 6)
     plt.ylabel('Probability', font1, labelpad = 6)
     plt.show()
 
@@ -68,6 +92,21 @@ def get_comment_length():
         pickle.dump(comment_choose, f)
     print("Finish.")
     
+def get_vedio_length():
+    f_list = []
+    for L1, L2 in databatch.relational_table.items():
+        fn = databatch.get_new_filename(L1)
+        f_list.extend([(L1, f) for f in fn])
+    ret = []
+    for i in range(len(f_list)):
+        tmpC, tmpL = databatch.get_new_comment(f_list[i][0], f_list[i][1])
+        num = 0
+        for tmp in tmpC: num += len(tmp.content)
+        ret.append(num)
+        if i % 100 == 0: print(i)
+    with open("./comment_vedio_num", "wb") as f:
+        pickle.dump(ret, f)
+
 def draw_2():
     with open("./comment_length_word", "rb") as f:
         ret = pickle.load(f)
@@ -164,6 +203,8 @@ if __name__ == "__main__":
     #get_mean_comment()
     #draw_3()
     #get_distance()
-    s1 = "你在干嘛呢"
-    s2 = "你在干什么呢"
-    print(jaccard_similarity(s1, s2))
+    #s1 = "你在干嘛呢"
+    #s2 = "你在干什么呢"
+    #print(jaccard_similarity(s1, s2))
+    #get_vedio_length()
+    draw_4()

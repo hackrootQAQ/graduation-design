@@ -135,6 +135,7 @@ if __name__ == "__main__":
     with open("./test", "rb") as f: test_D = pickle.load(f)
     S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
     ret_loss = []; min_loss = 1000
+    ret_acc = []; max_acc = 0
 
     for step in range(CFG.max_steps):
         X, Y, fr = next(S_train)
@@ -154,9 +155,12 @@ if __name__ == "__main__":
         )
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         ret_loss.append(l); min_loss = min(l, min_loss)
-        if min(ret_loss[-min(len(ret_loss), 600):]) > min_loss: break
-        
-        if min(ret_loss[-min(len(ret_loss), 500):]) > min_loss or min_loss == l:
+        ret_acc.append(a); max_acc = max(a, max_acc)
+        #if min(ret_loss[-min(len(ret_loss), 600):]) > min_loss: break
+        if max(ret_acc[-max(len(ret_acc), 600):]) < max_acc: break
+
+        #if min(ret_loss[-min(len(ret_loss), 500):]) > min_loss or min_loss == l:
+        if max(ret_acc[-max(len(ret_acc), 500):]) < max_acc or max_acc == a:
             S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
