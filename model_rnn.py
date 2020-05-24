@@ -101,7 +101,7 @@ if __name__ == "__main__":
             for i in range(len(test_D) // 128):
                 _X, _Y, _L = next(S_test)
                 feet_dict = model.feed_data(_X, _Y, _L, 1.0)
-                _, global_step, train_loss, train_accuracy = sess.run(
+                global_step, train_loss, train_accuracy = sess.run(
                     [model.global_step, model.loss, model.accuracy],
                     feed_dict = feed_dict
                 )
