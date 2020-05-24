@@ -2,6 +2,8 @@ import tensorflow as tf
 import databatch
 import pickle
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
 class RnnModel(object):
 
     def __init__(self):
@@ -79,7 +81,6 @@ if __name__ == "__main__":
     tf.train.start_queue_runners()
     saver = tf.train.Saver(max_to_keep = 0)
 
-    """
     for step in range(20000):
         _X, _Y, _L = next(S_train)
         feed_dict = model.feed_data(_X, _Y, _L, 0.5)
@@ -108,4 +109,3 @@ if __name__ == "__main__":
 
             num = (len(test_D) // 128)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))    
-    """
