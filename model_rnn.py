@@ -91,7 +91,7 @@ if __name__ == "__main__":
         )
         print("step %d, loss %.4f, acc %.4f" % (step, train_loss, train_accuracy))
 
-        if (step + 100) % 1 == 0:
+        if (step + 1) % 100 == 0:
             S_test = databatch.get_rnn_batch(batch_size = 128, 
                 max_length = 768, 
                 num_class = 12, 
