@@ -241,11 +241,11 @@ def get_rnn_batch(batch_size, max_length, num_class, eb_size, D = None):
             if l <= max_length:
                 _X.append(np.array([tmp[i] for i in range(l)].extend(
                     [np.zeros(eb_size) for i in range(max_length - l)])))
+                print(_X[-1].shape)
                 _L.append(l)
             else:
                 _X.append(np.array([tmp[i] for i in range(max_length)]))
                 _L.append(max_length)
-            print(_X[-1].shape)
             _Y.append(m[L1])
             now = (now + 1) % len(D)
         yield np.array(_X), np.eye(num_class)[_Y], np.array(_L)
