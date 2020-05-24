@@ -84,7 +84,6 @@ if __name__ == "__main__":
 
     for step in range(20000):
         _X, _Y, _L = next(S_train)
-        print(_L)
         feed_dict = model.feed_data(_X, _Y, _L, 0.5)
         _, global_step, train_loss, train_accuracy = sess.run(
             [model.optimizer, model.global_step, model.loss, model.accuracy],
