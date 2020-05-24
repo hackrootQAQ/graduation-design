@@ -1,6 +1,7 @@
 import tensorflow as tf
 import databatch
 import pickle
+import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
