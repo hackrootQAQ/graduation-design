@@ -4,11 +4,13 @@ import pickle
 import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+batch_size = 64
+max_length = 1536
 
 class RnnModel(object):
 
     def __init__(self):
-        self.input_x = tf.placeholder(tf.float32, shape=[None, 768, 768], name='input_x')
+        self.input_x = tf.placeholder(tf.float32, shape=[None, 1536, 768], name='input_x')
         self.input_y = tf.placeholder(tf.float32, shape=[None, 12], name='input_y')
         self.seq_length = tf.placeholder(tf.float32, shape=[None], name='sequen_length')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
@@ -70,8 +72,8 @@ class RnnModel(object):
 if __name__ == "__main__":
     with open("./train", "rb") as f: train_D = pickle.load(f)
     with open("./test", "rb") as f: test_D = pickle.load(f)
-    S_train = databatch.get_rnn_batch(batch_size = 128, 
-        max_length = 768, 
+    S_train = databatch.get_rnn_batch(batch_size = batch_size, 
+        max_length = max_length, 
         num_class = 12, 
         eb_size = 768, 
         D = train_D)
@@ -92,13 +94,13 @@ if __name__ == "__main__":
         print("step %d, loss %.4f, acc %.4f" % (step, train_loss, train_accuracy))
 
         if (step + 1) % 100 == 0:
-            S_test = databatch.get_rnn_batch(batch_size = 128, 
-                max_length = 768, 
+            S_test = databatch.get_rnn_batch(batch_size = batch_size, 
+                max_length = max_length, 
                 num_class = 12, 
                 eb_size = 768, 
                 D = test_D)
             predict_a, predict_l = 0, 0
-            for i in range(len(test_D) // 128):
+            for i in range(len(test_D) // batch_size):
                 _X, _Y, _L = next(S_test)
                 feet_dict = model.feed_data(_X, _Y, _L, 1.0)
                 global_step, train_loss, train_accuracy = sess.run(
@@ -108,5 +110,5 @@ if __name__ == "__main__":
                 predict_a += train_accuracy
                 predict_l += train_loss
 
-            num = (len(test_D) // 128)
+            num = (len(test_D) // batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))    
