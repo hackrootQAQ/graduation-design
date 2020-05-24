@@ -70,7 +70,7 @@ class RnnModel(object):
 if __name__ == "__main__":
     with open("./train", "rb") as f: train_D = pickle.load(f)
     with open("./test", "rb") as f: test_D = pickle.load(f)
-    S_train = databatch.get_rnn_batch(batch_size = 128, 
+    S_train = databatch.get_rnn_batch(batch_size = 64, 
         max_length = 768, 
         num_class = 12, 
         eb_size = 768, 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         print("step %d, loss %.4f, acc %.4f" % (step, train_loss, train_accuracy))
 
         if (step + 1) % 1 == 0:
-            S_test = databatch.get_rnn_batch(batch_size = 128, 
+            S_test = databatch.get_rnn_batch(batch_size = 64, 
                 max_length = 768, 
                 num_class = 12, 
                 eb_size = 768, 
