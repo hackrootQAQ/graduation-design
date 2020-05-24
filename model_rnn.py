@@ -105,8 +105,8 @@ if __name__ == "__main__":
                     [model.global_step, model.loss, model.accuracy],
                     feed_dict = feed_dict
                 )
-            predict_a += train_accuracy
-            predict_l += train_loss
+                predict_a += train_accuracy
+                predict_l += train_loss
 
             num = (len(test_D) // 128)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))    
