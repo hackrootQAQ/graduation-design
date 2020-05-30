@@ -5,12 +5,12 @@ import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 batch_size = 64
-max_length = 1536
+max_length = 768
 
 class RnnModel(object):
 
     def __init__(self):
-        self.input_x = tf.placeholder(tf.float32, shape=[None, 768, 768], name='input_x')
+        self.input_x = tf.placeholder(tf.float32, shape=[None, max_length, 768], name='input_x')
         self.input_y = tf.placeholder(tf.float32, shape=[None, 12], name='input_y')
         self.seq_length = tf.placeholder(tf.float32, shape=[None], name='sequen_length')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
