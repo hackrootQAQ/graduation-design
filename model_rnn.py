@@ -84,7 +84,7 @@ if __name__ == "__main__":
     tf.train.start_queue_runners()
     saver = tf.train.Saver(max_to_keep = 0)
 
-    for step in range(20000):
+    for step in range(2000):
         _X, _Y, _L = next(S_train)
         feed_dict = model.feed_data(_X, _Y, _L, 0.5)
         _, global_step, train_loss, train_accuracy = sess.run(
@@ -92,23 +92,22 @@ if __name__ == "__main__":
             feed_dict = feed_dict
         )
         print("step %d, loss %.4f, acc %.4f" % (step, train_loss, train_accuracy))
+        
+    S_test = databatch.get_rnn_batch(batch_size = batch_size, 
+        max_length = max_length, 
+        num_class = 12, 
+        eb_size = 768, 
+        D = test_D)
+    predict_a, predict_l = 0, 0
+    for i in range(len(test_D) // batch_size):
+        _X, _Y, _L = next(S_test)
+        feet_dict = model.feed_data(_X, _Y, _L, 1.0)
+        global_step, train_loss, train_accuracy = sess.run(
+            [model.global_step, model.loss, model.accuracy],
+            feed_dict = feed_dict
+        )
+        predict_a += train_accuracy
+        predict_l += train_loss
 
-        if (step + 1) % 100 == 0:
-            S_test = databatch.get_rnn_batch(batch_size = batch_size, 
-                max_length = max_length, 
-                num_class = 12, 
-                eb_size = 768, 
-                D = test_D)
-            predict_a, predict_l = 0, 0
-            for i in range(len(test_D) // batch_size):
-                _X, _Y, _L = next(S_test)
-                feet_dict = model.feed_data(_X, _Y, _L, 1.0)
-                global_step, train_loss, train_accuracy = sess.run(
-                    [model.global_step, model.loss, model.accuracy],
-                    feed_dict = feed_dict
-                )
-                predict_a += train_accuracy
-                predict_l += train_loss
-
-            num = (len(test_D) // batch_size)
-            print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))    
+    num = (len(test_D) // batch_size)
+    print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))    
