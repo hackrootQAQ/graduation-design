@@ -102,8 +102,8 @@ if __name__ == "__main__":
     for i in range(len(test_D) // batch_size):
         _X, _Y, _L = next(S_test)
         feet_dict = model.feed_data(_X, _Y, _L, 1.0)
-        global_step, train_loss, train_accuracy = sess.run(
-            [model.global_step, model.loss, model.accuracy],
+        train_loss, train_accuracy = sess.run(
+            [model.loss, model.accuracy],
             feed_dict = feed_dict
         )
         predict_a += train_accuracy
