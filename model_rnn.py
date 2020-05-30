@@ -5,7 +5,7 @@ import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 batch_size = 64
-max_length = 768
+max_length = 250
 
 class RnnModel(object):
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     tf.train.start_queue_runners()
     saver = tf.train.Saver(max_to_keep = 0)
 
-    for step in range(20):
+    for step in range(1000):
         _X, _Y, _L = next(S_train)
         feed_dict = model.feed_data(_X, _Y, _L, 0.5)
         _, global_step, train_loss, train_accuracy = sess.run(
@@ -107,7 +107,6 @@ if __name__ == "__main__":
             [model.loss, model.accuracy, model.predict],
             feed_dict = feed_dict
         )
-        print(pr)
         predict_a += train_accuracy
         predict_l += train_loss
 
