@@ -25,6 +25,7 @@ if __name__ == "__main__":
     with open("./train", "rb") as f: D = pickle.load(f)
     with open("./test", "rb") as f: D.extend(pickle.load(f))
     ret_d = []; ret_c = []
+    i = 0
     for f, L1 in D:
         A = vedio_vector[f]
         A = cp.array(A)
@@ -39,6 +40,8 @@ if __name__ == "__main__":
             if len(ret_d) % 10 == 0: print(len(ret_d))
         except:
             pass
+        i += 1
+        if i % 100 == 0: print(i)
 
     print(min(ret_d), max(ret_d), np.array(ret_d).mean())
     print(min(ret_c), max(ret_c), np.array(ret_c).mean())
