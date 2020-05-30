@@ -84,7 +84,7 @@ if __name__ == "__main__":
     tf.train.start_queue_runners()
     saver = tf.train.Saver(max_to_keep = 0)
 
-    for step in range(2000):
+    for step in range(20):
         _X, _Y, _L = next(S_train)
         feed_dict = model.feed_data(_X, _Y, _L, 0.5)
         _, global_step, train_loss, train_accuracy = sess.run(
@@ -93,6 +93,7 @@ if __name__ == "__main__":
         )
         print("step %d, loss %.4f, acc %.4f" % (step, train_loss, train_accuracy))
         
+    print(len(test_D))    
     S_test = databatch.get_rnn_batch(batch_size = batch_size, 
         max_length = max_length, 
         num_class = 12, 
@@ -102,10 +103,11 @@ if __name__ == "__main__":
     for i in range(len(test_D) // batch_size):
         _X, _Y, _L = next(S_test)
         feet_dict = model.feed_data(_X, _Y, _L, 1.0)
-        train_loss, train_accuracy = sess.run(
-            [model.loss, model.accuracy],
+        train_loss, train_accuracy, pr = sess.run(
+            [model.loss, model.accuracy, model.predict],
             feed_dict = feed_dict
         )
+        print(pr)
         predict_a += train_accuracy
         predict_l += train_loss
 
