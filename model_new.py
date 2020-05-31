@@ -35,18 +35,27 @@ def res_block(input, input_channel_num, output_channel_num, name, downsize = Fal
 
         W_c1 = init_w([3, 1, input_channel_num, output_channel_num], name = "W_c1")
         h_c1 = conv2d(input, W_c1, downsize = downsize, name = "h_c1")
-        h_c1_bn = tf.layers.batch_normalization(h_c1, training = training, name = "h_c1_bn")
+        if training is True:
+            h_c1_bn = tf.layers.batch_normalization(h_c1, training = True, name = "h_c1_bn")
+        else:
+            h_c1_bn = tf.layers.batch_normalization(h_c1, training = False, name = "h_c1_bn")    
         h_c1_relu = tf.nn.relu6(h_c1_bn)
         W_c2 = init_w([3, 1, output_channel_num, output_channel_num], name = "W_c2")
         h_c2 = conv2d(h_c1_relu, W_c2, name = "h_c2")
-        h_c2_bn = tf.layers.batch_normalization(h_c2, training = training, name = "h_c2_bn")
+        if training is True:
+            h_c2_bn = tf.layers.batch_normalization(h_c2, training = True, name = "h_c2_bn")
+        else:
+            h_c2_bn = tf.layers.batch_normalization(h_c2, training = False, name = "h_c2_bn")    
         if input_channel_num == output_channel_num: 
             h_c2_add = tf.add(h_c2_bn, input, name = "h_c2_add")
             h_c2_relu = tf.nn.relu6(h_c2_add, name = "h_c2_relu")
         else: 
             W_up = init_w([1, 1, input_channel_num, output_channel_num], name = "W_up")
             h_c2_up = conv2d(input, W_up, downsize = downsize, name = "h_c2_up")
-            h_c2_up_bn = tf.layers.batch_normalization(h_c2_up, training = training, name = "h_c2_up_bn")
+            if training is True:
+                h_c2_up_bn = tf.layers.batch_normalization(h_c2_up, training = True, name = "h_c2_up_bn")
+            else:
+                h_c2_up_bn = tf.layers.batch_normalization(h_c2_up, training = False, name = "h_c2_up_bn")    
             h_c2_add = tf.add(h_c2_bn, h_c2_up_bn, name = "h_c2_add")
             h_c2_relu = tf.nn.relu6(h_c2_add, name = "h_c2_relu")
         return h_c2_relu

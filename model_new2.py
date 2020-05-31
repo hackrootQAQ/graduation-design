@@ -76,9 +76,6 @@ if __name__ == "__main__":
     input_Y = tf.placeholder(tf.int64,
         [CFG.batch_size],
         name = "input_label")
-    input_L = tf.placeholder(tf.float32,
-        [CFG.batch_size],
-        name = "input_length")
     input_t = tf.placeholder(tf.bool,
         name = "is_training")
     #input_p = tf.placeholder(tf.float32,
