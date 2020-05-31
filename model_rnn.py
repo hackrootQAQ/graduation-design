@@ -41,7 +41,7 @@ class RnnModel(object):
         with tf.name_scope('output'):
             w = tf.Variable(tf.truncated_normal([768, 12], stddev=0.1), name='w')
             b = tf.Variable(tf.constant(0.1, shape=[12]), name='b')
-            self.logits = tf.matmul(output, w) + b
+            self.logits = tf.matmul(self.out_drop, w) + b
             self.predict = tf.argmax(tf.nn.softmax(self.logits), 1, name='predict')
 
         with tf.name_scope('loss'):
