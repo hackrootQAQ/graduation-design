@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     #192 * 192
     conv1_x_1 = res_block(input_X, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention, training = input_t)
-    conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2", attention = CFG.attention, training = input_t)
+    conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2", training = input_t)
 
     #48 * 48
     conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True, attention = CFG.attention, training = input_t)
