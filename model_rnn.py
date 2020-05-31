@@ -3,9 +3,9 @@ import databatch
 import pickle
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 batch_size = 64
-max_length = 250
+max_length = 768
 
 class RnnModel(object):
 
@@ -13,7 +13,7 @@ class RnnModel(object):
         self.input_x = tf.placeholder(tf.float32, shape=[None, max_length, 768], name='input_x')
         self.input_y = tf.placeholder(tf.float32, shape=[None, 12], name='input_y')
         self.seq_length = tf.placeholder(tf.float32, shape=[None], name='sequen_length')
-        self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
+        #self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.global_step = tf.Variable(0, trainable=False, name='global_step')
         self.rnn()
 
@@ -21,7 +21,7 @@ class RnnModel(object):
 
         with tf.name_scope('cell'):
             cell = tf.nn.rnn_cell.LSTMCell(768)
-            cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=self.keep_prob)
+            #cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=self.keep_prob)
 
             cells = [cell for _ in range(2)]
             Cell = tf.nn.rnn_cell.MultiRNNCell(cells, state_is_tuple=True)
@@ -64,8 +64,8 @@ class RnnModel(object):
 
         feed_dict = {self.input_x: x_batch,
                      self.input_y: y_batch,
-                     self.seq_length: seq_len,
-                     self.keep_prob: keep_prob}
+                     self.seq_length: seq_len}
+                     #self.keep_prob: keep_prob}
 
         return feed_dict
 
@@ -86,29 +86,29 @@ if __name__ == "__main__":
 
     for step in range(2000):
         _X, _Y, _L = next(S_train)
-        feed_dict = model.feed_data(_X, _Y, _L, 0.5)
+        feed_dict = model.feed_data(_X, _Y, _L)
         _, global_step, train_loss, train_accuracy = sess.run(
             [model.optimizer, model.global_step, model.loss, model.accuracy],
             feed_dict = feed_dict
         )
         print("step %d, loss %.4f, acc %.4f" % (step, train_loss, train_accuracy))
         
-    print(len(test_D))    
-    S_test = databatch.get_rnn_batch(batch_size = batch_size, 
-        max_length = max_length, 
-        num_class = 12, 
-        eb_size = 768, 
-        D = test_D)
-    predict_a, predict_l = 0, 0
-    for i in range(len(test_D) // batch_size):
-        _X, _Y, _L = next(S_test)
-        feet_dict = model.feed_data(_X, _Y, _L, 1.0)
-        train_loss, train_accuracy, pr = sess.run(
-            [model.loss, model.accuracy, model.predict],
-            feed_dict = feed_dict
-        )
-        predict_a += train_accuracy
-        predict_l += train_loss
+        if (step + 1) % 100 == 0:
+            S_test = databatch.get_rnn_batch(batch_size = batch_size, 
+                max_length = max_length, 
+                num_class = 12, 
+                eb_size = 768, 
+                D = test_D)
+            predict_a, predict_l = 0, 0
+            for i in range(len(test_D) // batch_size):
+                _X, _Y, _L = next(S_test)
+                feet_dict = model.feed_data(_X, _Y, _L)
+                train_loss, train_accuracy, pr = sess.run(
+                    [model.loss, model.accuracy, model.predict],
+                    feed_dict = feed_dict
+                )
+                predict_a += train_accuracy
+                predict_l += train_loss
 
-    num = (len(test_D) // batch_size)
-    print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))    
+            num = (len(test_D) // batch_size)
+            print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))    
