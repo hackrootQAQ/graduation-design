@@ -195,6 +195,30 @@ def get_distance():
     print(b)
     print(c)
 
+def gen_distance_2():
+    f_list = []
+    for L1, L2 in databatch.relational_table.items():
+        fn = databatch.get_new_filename(L1)
+    random.shuffle(f_list)
+    a = []; b = []; c = []
+    for i in range(50):
+        print("\r{}...".format(str(i + 1)), end = "", flush = True)
+        l = len(tmpC)
+        a1 = []; a2 = []; a3 = []
+        for i in range(l):
+            for j in range(i + 1, l):
+                dt = abs(tmpC[j].time - tmpC[i].time)
+                if dt > 5: break
+                if dt <= 1: a1.append(edit_distance(tmpC[i].content, tmpC[j].content))
+                elif dt <= 3: a2.append(edit_distance(tmpC[i].content, tmpC[j].content))
+                elif dt <= 5: a3.append(edit_distance(tmpC[i].content, tmpC[j].content))
+        a.append((np.mean(a1), l))
+        b.append((np.mean(a2), l))
+        c.append((np.mean(a3), l))
+    with open("./comment_a", "wb") as f: pickle.dump(a, f)
+    with open("./comment_b", "wb") as f: pickle.dump(b, f)
+    with open("./comment_c", "wb") as f: pickle.dump(c, f)
+
 if __name__ == "__main__":
     #get_num()
     #draw_1() 
@@ -207,4 +231,5 @@ if __name__ == "__main__":
     #s2 = "你在干什么呢"
     #print(jaccard_similarity(s1, s2))
     #get_vedio_length()
-    draw_4()
+    #draw_4()
+    gen_distance_2()
