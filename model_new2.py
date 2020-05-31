@@ -37,6 +37,7 @@ def res_block(input, input_channel_num, output_channel_num, name, downsize = Fal
         h_c1 = conv2d(input, W_c1, downsize = downsize, name = "h_c1")
         h_c1_bn = tf.layers.batch_normalization(h_c1, training = training, name = "h_c1_bn")
         h_c1_relu = tf.nn.relu6(h_c1_bn)
+        #h_c1_relu = tf.nn.relu6(h_c1)
         W_c2 = init_w([3, 1, output_channel_num, output_channel_num], name = "W_c2")
         h_c2 = conv2d(h_c1_relu, W_c2, name = "h_c2")
         h_c2_bn = tf.layers.batch_normalization(h_c2, training = training, name = "h_c2_bn")
@@ -78,25 +79,33 @@ if __name__ == "__main__":
     input_L = tf.placeholder(tf.float32,
         [CFG.batch_size],
         name = "input_length")
+    input_t = tf.placeholder(tf.bool,
+        name = "is_training")
+    #input_p = tf.placeholder(tf.float32,
+    #    name = "dropout")
 
+    """
     cell = tf.nn.rnn_cell.LSTMCell(CFG.num_comment, state_is_tuple = True)
     output, _ = tf.nn.dynamic_rnn(cell = cell, 
         inputs = input_X, 
         sequence_length = input_L, 
         dtype = tf.float32)
     output = tf.reshape(output, [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1])
+    """
+
+    output = tf.reshape(input_X, [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1])
 
     #192 * 192
-    conv1_x_1 = res_block(output, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention)
-    conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2")
+    conv1_x_1 = res_block(output, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention, training = input_t)
+    conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2", attention = CFG.attention, training = input_t)
 
     #48 * 48
-    conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True, attention = CFG.attention)
-    conv2_x_2 = res_block(conv2_x_1, 16, 16, "conv2_x_2")
+    conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True, attention = CFG.attention, training = input_t)
+    conv2_x_2 = res_block(conv2_x_1, 16, 16, "conv2_x_2", attention = CFG.attention, training = input_t)
 
     #12 * 12
-    conv3_x_1 = res_block(conv2_x_2, 16, 64, "conv3_x_1", downsize = True, attention = CFG.attention)
-    conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2")
+    conv3_x_1 = res_block(conv2_x_2, 16, 64, "conv3_x_1", downsize = True, attention = CFG.attention, training = input_t)
+    conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2", attention = CFG.attention, training = input_t)
     conv3_x_p = tf.nn.avg_pool(value = conv3_x_2,
         ksize = [1, 12, 1, 1],
         strides = [1, 12, 1, 1],
@@ -107,11 +116,11 @@ if __name__ == "__main__":
     W_f1 = init_w([64, 1], name = "W_f1")
     b_f1 = init_b([768], name = "b_f1")
     f1 = tf.add(tf.reshape(reshape_matmul(ret, W_f1), [-1, 768]), b_f1)
-    f1 = tf.nn.relu6(tf.layers.batch_normalization(f1))
+    f1 = tf.nn.relu6(tf.layers.batch_normalization(f1, training = input_t))
     W_f2 = init_w([768, 96], name = "W_f2")
     b_f2 = init_b([96], name = "b_f2")
     f2 = tf.add(tf.matmul(f1, W_f2), b_f2)
-    f2 = tf.nn.relu6(tf.layers.batch_normalization(f2))
+    f2 = tf.nn.relu6(tf.layers.batch_normalization(f2, training = input_t))
     W_f3 = init_w([96, 12], name = "W_f3")
     b_f3 = init_b([12], name = "b_f3")
     out_ = tf.add(tf.matmul(f2, W_f3), b_f3)   
@@ -150,28 +159,25 @@ if __name__ == "__main__":
 
     for step in range(CFG.max_steps):
         X, Y, fr = next(S_train)
-        X_, Y_, fr_ = next(S_train)
+        #X_, Y_, fr_ = next(S_train)
 
         X = np.array(X)
         #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-        X_ = np.array(X_)
+        #X_ = np.array(X_)
         #X_ = X_.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-        _ = sess.run(
-            train_op,
-            feed_dict = {input_X : X, input_Y : Y, input_L : _L}
-        )
-        l, a = sess.run(
-            [loss, acc],
-            feed_dict = {input_X : X_, input_Y : Y_, input_L : _L}
+        _, l, a = sess.run(
+            [train_op, loss, acc],
+            feed_dict = {input_X : X, input_Y : Y, input_t : True}
         )
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
-        ret_loss.append(l); min_loss = min(l, min_loss)
-        ret_acc.append(a); max_acc = max(a, max_acc)
+        #ret_loss.append(l); min_loss = min(l, min_loss)
+        #ret_acc.append(a); max_acc = max(a, max_acc)
         #if min(ret_loss[-min(len(ret_loss), 600):]) > min_loss: break
-        if max(ret_acc[-max(len(ret_acc), 600):]) < max_acc: break
+        #if max(ret_acc[-max(len(ret_acc), 600):]) < max_acc: break
 
         #if min(ret_loss[-min(len(ret_loss), 500):]) > min_loss or min_loss == l:
-        if max(ret_acc[-max(len(ret_acc), 500):]) < max_acc or max_acc == a:
+        #if max(ret_acc[-max(len(ret_acc), 500):]) < max_acc or max_acc == a:
+        if (step + 1) % 200 == 0:
             S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
@@ -182,7 +188,7 @@ if __name__ == "__main__":
                     #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
                     l, a = sess.run(
                         [loss, acc],
-                        feed_dict = {input_X : X, input_Y : Y, input_L : _L}
+                        feed_dict = {input_X : X, input_Y : Y, input_t : False}
                     )
                     predict_a += a; predict_l += l
                 except: 
