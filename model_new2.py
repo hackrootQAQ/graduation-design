@@ -70,14 +70,24 @@ def reshape_matmul(A, B):
 
 if __name__ == "__main__":
     input_X = tf.placeholder(tf.float32, 
-        [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1],
+        [CFG.batch_size, CFG.num_comment, CFG.embedding_size],
         name = "input_comment")
     input_Y = tf.placeholder(tf.int64,
         [CFG.batch_size],
         name = "input_label")
+    input_L = tf.placeholder(tf.float32,
+        [CFG.batch_size],
+        name = "input_length")
+
+    cell = tf.nn.rnn_cell.LSTMCell(CFG.num_comment, state_is_tuple = True)
+    output, _ = tf.nn.dynamic_rnn(cell = cell, 
+        inputs = input_X, 
+        sequence_length = input_L, 
+        dtype = tf.float32)
+    output = tf.reshape(output, [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1])
 
     #192 * 192
-    conv1_x_1 = res_block(input_X, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention)
+    conv1_x_1 = res_block(output, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention)
     conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2")
 
     #48 * 48
@@ -131,6 +141,7 @@ if __name__ == "__main__":
     tf.train.start_queue_runners()
     saver = tf.train.Saver(max_to_keep = 0)
    
+    _L = np.array([CFG.num_comment for i in range(CFG.batch_size)])
     with open("./train", "rb") as f: train_D = pickle.load(f)
     with open("./test", "rb") as f: test_D = pickle.load(f)
     S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
@@ -142,16 +153,16 @@ if __name__ == "__main__":
         X_, Y_, fr_ = next(S_train)
 
         X = np.array(X)
-        X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+        #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
         X_ = np.array(X_)
-        X_ = X_.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+        #X_ = X_.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
         _ = sess.run(
             train_op,
-            feed_dict = {input_X : X, input_Y : Y}
+            feed_dict = {input_X : X, input_Y : Y, input_L : _L}
         )
         l, a = sess.run(
             [loss, acc],
-            feed_dict = {input_X : X_, input_Y : Y_}
+            feed_dict = {input_X : X_, input_Y : Y_, input_L : _L}
         )
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         ret_loss.append(l); min_loss = min(l, min_loss)
@@ -168,10 +179,10 @@ if __name__ == "__main__":
 
                 try:
                     X = np.array(X)
-                    X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+                    #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
                     l, a = sess.run(
                         [loss, acc],
-                        feed_dict = {input_X : X, input_Y : Y}
+                        feed_dict = {input_X : X, input_Y : Y, input_L : _L}
                     )
                     predict_a += a; predict_l += l
                 except: 
@@ -182,3 +193,4 @@ if __name__ == "__main__":
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
     saver.save(sess, "./save/{}".format(CFG.model_name), global_step = global_step)
+    
