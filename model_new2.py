@@ -71,7 +71,7 @@ def reshape_matmul(A, B):
 
 if __name__ == "__main__":
     input_X = tf.placeholder(tf.float32, 
-        [CFG.batch_size, CFG.num_comment, CFG.embedding_size],
+        [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1],
         name = "input_comment")
     input_Y = tf.placeholder(tf.int64,
         [CFG.batch_size],
@@ -93,10 +93,10 @@ if __name__ == "__main__":
     output = tf.reshape(output, [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1])
     """
 
-    output = tf.reshape(input_X, [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1])
+    #output = tf.reshape(input_X, [CFG.batch_size, CFG.num_comment, CFG.embedding_size, 1])
 
     #192 * 192
-    conv1_x_1 = res_block(output, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention, training = input_t)
+    conv1_x_1 = res_block(input_X, 1, 4, "conv1_x_1", downsize = True, attention = CFG.attention, training = input_t)
     conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2", attention = CFG.attention, training = input_t)
 
     #48 * 48
@@ -159,15 +159,19 @@ if __name__ == "__main__":
 
     for step in range(CFG.max_steps):
         X, Y, fr = next(S_train)
-        #X_, Y_, fr_ = next(S_train)
+        X_, Y_, fr_ = next(S_train)
 
         X = np.array(X)
-        #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-        #X_ = np.array(X_)
-        #X_ = X_.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-        _, l, a = sess.run(
-            [train_op, loss, acc],
+        X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+        X_ = np.array(X_)
+        X_ = X_.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+        _ = sess.run(
+            train_op,
             feed_dict = {input_X : X, input_Y : Y, input_t : True}
+        )
+        l, a = sess.run(
+            [loss, acc],
+            feed_dict = {input_X : X_, input_Y : Y_, input_t : False}
         )
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         #ret_loss.append(l); min_loss = min(l, min_loss)
@@ -182,19 +186,13 @@ if __name__ == "__main__":
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
                 X, Y, fr = next(S_test)
-
-                try:
-                    X = np.array(X)
-                    #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
-                    l, a = sess.run(
-                        [loss, acc],
-                        feed_dict = {input_X : X, input_Y : Y, input_t : False}
-                    )
-                    predict_a += a; predict_l += l
-                except: 
-                    with open("wrong_data", "a+") as f:
-                        f.write(str(fr) + "\n")
-                        print("PASS")
+                X = np.array(X)
+                #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+                l, a = sess.run(
+                    [loss, acc],
+                    feed_dict = {input_X : X, input_Y : Y, input_t : False}
+                )
+                predict_a += a; predict_l += l
                 
             num = (len(test_D) // CFG.batch_size)
             print("predict_loss %.4f, predict_acc %.4f" % (predict_l / num, predict_a / num))
