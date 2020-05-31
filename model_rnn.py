@@ -5,7 +5,7 @@ import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 batch_size = 64
-max_length = 100
+max_length = 10
 
 class RnnModel(object):
 
