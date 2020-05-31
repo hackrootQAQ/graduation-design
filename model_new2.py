@@ -191,13 +191,13 @@ if __name__ == "__main__":
 
         #if min(ret_loss[-min(len(ret_loss), 500):]) > min_loss or min_loss == l:
         #if max(ret_acc[-max(len(ret_acc), 500):]) < max_acc or max_acc == a:
-        if (step + 1) % 200 == 0:
+        if (step + 1) % 2000 == 0:
             S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
                 X, Y, fr = next(S_test)
                 X = np.array(X)
-                #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+                X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
                 l, a = sess.run(
                     [loss, acc],
                     feed_dict = {input_X : X, input_Y : Y, input_t : False}
