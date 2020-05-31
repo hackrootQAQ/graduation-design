@@ -35,13 +35,13 @@ class RnnModel(object):
             output = tf.reduce_sum(output, axis=1)
             #output:[batch_size, seq_length, hidden_dim]
 
-        with tf.name_scope('dropout'):
-            self.out_drop = tf.nn.dropout(output, keep_prob=self.keep_prob)
+        #with tf.name_scope('dropout'):
+        #    self.out_drop = tf.nn.dropout(output, keep_prob=self.keep_prob)
 
         with tf.name_scope('output'):
             w = tf.Variable(tf.truncated_normal([768, 12], stddev=0.1), name='w')
             b = tf.Variable(tf.constant(0.1, shape=[12]), name='b')
-            self.logits = tf.matmul(self.out_drop, w) + b
+            self.logits = tf.matmul(output, w) + b
             self.predict = tf.argmax(tf.nn.softmax(self.logits), 1, name='predict')
 
         with tf.name_scope('loss'):
