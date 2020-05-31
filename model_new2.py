@@ -106,11 +106,11 @@ if __name__ == "__main__":
 
     #48 * 48
     conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True, attention = CFG.attention, training = input_t)
-    conv2_x_2 = res_block(conv2_x_1, 16, 16, "conv2_x_2", attention = CFG.attention, training = input_t)
+    conv2_x_2 = res_block(conv2_x_1, 16, 16, "conv2_x_2", training = input_t)
 
     #12 * 12
     conv3_x_1 = res_block(conv2_x_2, 16, 64, "conv3_x_1", downsize = True, attention = CFG.attention, training = input_t)
-    conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2", attention = CFG.attention, training = input_t)
+    conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2", training = input_t)
     conv3_x_p = tf.nn.avg_pool(value = conv3_x_2,
         ksize = [1, 12, 1, 1],
         strides = [1, 12, 1, 1],
