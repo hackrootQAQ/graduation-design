@@ -3,7 +3,7 @@ import databatch
 import pickle
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 batch_size = 64
 max_length = 250
 
