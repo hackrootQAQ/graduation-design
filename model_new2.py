@@ -35,19 +35,27 @@ def res_block(input, input_channel_num, output_channel_num, name, downsize = Fal
 
         W_c1 = init_w([3, 1, input_channel_num, output_channel_num], name = "W_c1")
         h_c1 = conv2d(input, W_c1, downsize = downsize, name = "h_c1")
-        h_c1_bn = tf.layers.batch_normalization(h_c1, training = training, name = "h_c1_bn")
+        if training is True:
+            h_c1_bn = tf.layers.batch_normalization(h_c1, training = True, name = "h_c1_bn")
+        else:
+            h_c1_bn = tf.layers.batch_normalization(h_c1, training = False, name = "h_c1_bn")
         h_c1_relu = tf.nn.relu6(h_c1_bn)
-        #h_c1_relu = tf.nn.relu6(h_c1)
         W_c2 = init_w([3, 1, output_channel_num, output_channel_num], name = "W_c2")
         h_c2 = conv2d(h_c1_relu, W_c2, name = "h_c2")
-        h_c2_bn = tf.layers.batch_normalization(h_c2, training = training, name = "h_c2_bn")
+        if training is True:
+            h_c2_bn = tf.layers.batch_normalization(h_c2, training = True, name = "h_c2_bn")
+        else:
+            h_c2_bn = tf.layers.batch_normalization(h_c2, training = False, name = "h_c2_bn")    
         if input_channel_num == output_channel_num: 
             h_c2_add = tf.add(h_c2_bn, input, name = "h_c2_add")
             h_c2_relu = tf.nn.relu6(h_c2_add, name = "h_c2_relu")
         else: 
             W_up = init_w([1, 1, input_channel_num, output_channel_num], name = "W_up")
             h_c2_up = conv2d(input, W_up, downsize = downsize, name = "h_c2_up")
-            h_c2_up_bn = tf.layers.batch_normalization(h_c2_up, training = training, name = "h_c2_up_bn")
+            if training is True:
+                h_c2_up_bn = tf.layers.batch_normalization(h_c2_up, training = True, name = "h_c2_up_bn")
+            else:
+                h_c2_up_bn = tf.layers.batch_normalization(h_c2_up, training = False, name = "h_c2_up_bn")    
             h_c2_add = tf.add(h_c2_bn, h_c2_up_bn, name = "h_c2_add")
             h_c2_relu = tf.nn.relu6(h_c2_add, name = "h_c2_relu")
         return h_c2_relu
@@ -113,11 +121,17 @@ if __name__ == "__main__":
     W_f1 = init_w([64, 1], name = "W_f1")
     b_f1 = init_b([768], name = "b_f1")
     f1 = tf.add(tf.reshape(reshape_matmul(ret, W_f1), [-1, 768]), b_f1)
-    f1 = tf.nn.relu6(tf.layers.batch_normalization(f1, training = input_t))
+    if input_t is True:
+        f1 = tf.nn.relu6(tf.layers.batch_normalization(f1, training = True))
+    else:
+        f1 = tf.nn.relu6(tf.layers.batch_normalization(f1, training = False))    
     W_f2 = init_w([768, 96], name = "W_f2")
     b_f2 = init_b([96], name = "b_f2")
     f2 = tf.add(tf.matmul(f1, W_f2), b_f2)
-    f2 = tf.nn.relu6(tf.layers.batch_normalization(f2, training = input_t))
+    if input_t is True:
+        f2 = tf.nn.relu6(tf.layers.batch_normalization(f2, training = True))
+    else:
+        f2 = tf.nn.relu6(tf.layers.batch_normalization(f2, training = False))    
     W_f3 = init_w([96, 12], name = "W_f3")
     b_f3 = init_b([12], name = "b_f3")
     out_ = tf.add(tf.matmul(f2, W_f3), b_f3)   
@@ -147,7 +161,6 @@ if __name__ == "__main__":
     tf.train.start_queue_runners()
     saver = tf.train.Saver(max_to_keep = 0)
    
-    _L = np.array([CFG.num_comment for i in range(CFG.batch_size)])
     with open("./train", "rb") as f: train_D = pickle.load(f)
     with open("./test", "rb") as f: test_D = pickle.load(f)
     S_train = databatch.get_mean_batch(batch_size = CFG.batch_size, D = train_D)
