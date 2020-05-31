@@ -179,10 +179,11 @@ if __name__ == "__main__":
             train_op,
             feed_dict = {input_X : X, input_Y : Y, input_t : True}
         )
-        l, a = sess.run(
-            [loss, acc],
-            feed_dict = {input_X : X_, input_Y : Y_, input_t : False}
-        )
+        with tf.control_dependencies(update_ops):
+            l, a = sess.run(
+                [loss, acc],
+                feed_dict = {input_X : X_, input_Y : Y_, input_t : False}
+            )
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         #ret_loss.append(l); min_loss = min(l, min_loss)
         #ret_acc.append(a); max_acc = max(a, max_acc)
