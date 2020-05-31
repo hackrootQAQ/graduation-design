@@ -60,7 +60,7 @@ class RnnModel(object):
             correct_prediction = tf.equal(self.predict, tf.argmax(self.input_y, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='accuracy')
 
-    def feed_data(self, x_batch, y_batch, seq_len, keep_prob):
+    def feed_data(self, x_batch, y_batch, seq_len):
 
         feed_dict = {self.input_x: x_batch,
                      self.input_y: y_batch,
