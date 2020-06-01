@@ -11,7 +11,7 @@ class RnnModel(object):
 
     def __init__(self):
         self.input_x = tf.placeholder(tf.float32, shape=[None, max_length, 768], name='input_x')
-        self.input_y = tf.placeholder(tf.float32, shape=[None, 12], name='input_y')
+        self.input_y = tf.placeholder(tf.float32, shape=[None], name='input_y')
         self.seq_length = tf.placeholder(tf.float32, shape=[None], name='sequen_length')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.global_step = tf.Variable(0, trainable=False, name='global_step')
@@ -45,7 +45,11 @@ class RnnModel(object):
             self.predict = tf.argmax(tf.nn.softmax(self.logits), 1, name='predict')
 
         with tf.name_scope('loss'):
-            losses = tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.logits, labels=self.input_y)
+            #losses = tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.logits, labels=self.input_y)
+            losses = tf.nn.sparse_softmax_cross_entropy_with_logits(
+                labels = self.input_y,
+                logits = self.logits
+            )
             self.loss = tf.reduce_mean(losses)
 
         with tf.name_scope('optimizer'):

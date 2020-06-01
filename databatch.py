@@ -248,7 +248,7 @@ def get_rnn_batch(batch_size, max_length, num_class, eb_size, D = None):
                 _L.append(max_length)
             _Y.append(m[L1])
             now = (now + 1) % len(D)
-        yield np.array(_X), np.eye(num_class)[_Y], np.array(_L)
+        yield np.array(_X), np.array(_Y), np.array(_L)
 
 if __name__ == "__main__":
     pass
