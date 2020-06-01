@@ -11,7 +11,7 @@ class RnnModel(object):
 
     def __init__(self):
         self.input_x = tf.placeholder(tf.float32, shape=[None, max_length, 768], name='input_x')
-        self.input_y = tf.placeholder(tf.int32, shape=[None], name='input_y')
+        self.input_y = tf.placeholder(tf.int64, shape=[None], name='input_y')
         self.seq_length = tf.placeholder(tf.float32, shape=[None], name='sequen_length')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.global_step = tf.Variable(0, trainable=False, name='global_step')
