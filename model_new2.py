@@ -77,7 +77,8 @@ if __name__ == "__main__":
         name = "input_label")
     input_p = tf.placeholder(tf.float32,
         name = "dropout")
-    input_L = tf.placeholder([CFG.batch_size],
+    input_L = tf.placeholder(tf.float32,
+        [CFG.batch_size],
         name = "sequen_length"
     )
 
