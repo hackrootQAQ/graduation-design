@@ -199,10 +199,12 @@ def gen_distance_2():
     f_list = []
     for L1, L2 in databatch.relational_table.items():
         fn = databatch.get_new_filename(L1)
+        f_list.extend([(L1, f) for f in fn])
     random.shuffle(f_list)
     a = []; b = []; c = []
-    for i in range(50):
+    for i in range(500):
         print("\r{}...".format(str(i + 1)), end = "", flush = True)
+        tmpC, tmpL = databatch.get_new_comment(f_list[i][0], f_list[i][1])
         l = len(tmpC)
         a1 = []; a2 = []; a3 = []
         for i in range(l):
@@ -219,6 +221,32 @@ def gen_distance_2():
     with open("./comment_b", "wb") as f: pickle.dump(b, f)
     with open("./comment_c", "wb") as f: pickle.dump(c, f)
 
+def draw_5():
+    """
+    f_list = []
+    for L1, L2 in databatch.relational_table.items():
+        fn = databatch.get_new_filename(L1)
+        f_list.extend([(L1, f) for f in fn])
+    t = []
+    for i in range(len(f_list)):
+        print("\r{}...".format(str(i + 1)), end = "", flush = True)
+        tmpC, tmpL = databatch.get_new_comment(f_list[i][0], f_list[i][1])
+        t.append(tmpC[-1].time)
+    with open("./comment_t", "wb") as f: pickle.dump(t, f)
+    """
+    
+    with open("./comment_t", "rb") as f: tt = pickle.load(f)
+    t = []
+    for i in range(len(tt)):
+        if tt[i] < 10000: t.append(tt[i])
+    print(np.median(t))
+    plt.tick_params(labelsize = 12)
+    plt.hist(t, bins = 100, color = 'r', alpha = 0.5, rwidth = 0.9, normed = True)
+    font1 = {'family' : 'Fira code', 'weight' : 'bold', 'size' : 14}
+    plt.xlabel('Vediotime', font1, labelpad = 6)
+    plt.ylabel('Probability', font1, labelpad = 6)
+    plt.show()
+    
 if __name__ == "__main__":
     #get_num()
     #draw_1() 
@@ -232,4 +260,5 @@ if __name__ == "__main__":
     #print(jaccard_similarity(s1, s2))
     #get_vedio_length()
     #draw_4()
-    gen_distance_2()
+    #gen_distance_2()
+    draw_5()
