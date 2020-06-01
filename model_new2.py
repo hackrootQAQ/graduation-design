@@ -97,20 +97,20 @@ if __name__ == "__main__":
     conv1_x_2 = res_block(conv1_x_1, 4, 4, "conv1_x_2")
 
     #48 * 48
-    conv2_x_1 = res_block(conv1_x_2, 4, 16, "conv2_x_1", downsize = True, attention = CFG.attention)
-    conv2_x_2 = res_block(conv2_x_1, 16, 16, "conv2_x_2")
+    conv2_x_1 = res_block(conv1_x_2, 4, 8, "conv2_x_1", downsize = True, attention = CFG.attention)
+    conv2_x_2 = res_block(conv2_x_1, 8, 8, "conv2_x_2")
 
     #12 * 12
-    conv3_x_1 = res_block(conv2_x_2, 16, 64, "conv3_x_1", downsize = True, attention = CFG.attention)
-    conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2")
+    conv3_x_1 = res_block(conv2_x_2, 8, 32, "conv3_x_1", downsize = True, attention = CFG.attention)
+    conv3_x_2 = res_block(conv3_x_1, 32, 32, "conv3_x_2")
     conv3_x_p = tf.nn.avg_pool(value = conv3_x_2,
         ksize = [1, 12, 1, 1],
         strides = [1, 12, 1, 1],
         padding = "SAME"
     )
 
-    ret = tf.reshape(conv3_x_p, [-1, 768, 64])
-    W_f1 = init_w([64, 1], name = "W_f1")
+    ret = tf.reshape(conv3_x_p, [-1, 768, 32])
+    W_f1 = init_w([32, 1], name = "W_f1")
     b_f1 = init_b([768], name = "b_f1")
     f1 = tf.add(tf.reshape(reshape_matmul(ret, W_f1), [-1, 768]), b_f1)
     f1 = tf.nn.relu6(tf.layers.batch_normalization(f1, training = True))
