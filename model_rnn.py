@@ -61,7 +61,8 @@ class RnnModel(object):
             #global_step 自动+1
 
         with tf.name_scope('accuracy'):
-            correct_prediction = tf.equal(self.predict, tf.argmax(self.input_y, 1))
+            #correct_prediction = tf.equal(self.predict, tf.argmax(self.input_y, 1))
+            correct_prediction = tf.cast(tf.equal(self.predict, input_y), tf.float32)
             self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='accuracy')
 
     def feed_data(self, x_batch, y_batch, seq_len, keep_prob):
