@@ -163,12 +163,12 @@ if __name__ == "__main__":
         #X_ = X_.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
         _ = sess.run(
             train_op,
-            feed_dict = {input_X : X, input_Y : Y, input_p : 0.5, input_L = _L}
+            feed_dict = {input_X : X, input_Y : Y, input_p : 0.5, input_L : _L}
         )
         with tf.control_dependencies(update_ops):
             l, a = sess.run(
                 [loss, acc],
-                feed_dict = {input_X : X_, input_Y : Y_, input_p : 1, input_L = _L}
+                feed_dict = {input_X : X_, input_Y : Y_, input_p : 1, input_L : _L}
             )
         print("step %d, loss %.4f, acc %.4f" % (step, l, a))
         #ret_loss.append(l); min_loss = min(l, min_loss)
@@ -187,7 +187,7 @@ if __name__ == "__main__":
                 #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
                 l, a = sess.run(
                     [loss, acc],
-                    feed_dict = {input_X : X, input_Y : Y, input_p : 1, input_L = _L}
+                    feed_dict = {input_X : X, input_Y : Y, input_p : 1, input_L : _L}
                 )
                 predict_a += a; predict_l += l
                 
