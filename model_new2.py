@@ -7,7 +7,7 @@ import pickle
 import os
 
 os.environ["PYTHONUNBUFFERED"] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 CFG = config.CONFIG()
 CFG.Print()
 
@@ -162,6 +162,7 @@ if __name__ == "__main__":
         #X = X.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
         X_ = np.array(X_)
         #X_ = X_.reshape([-1, CFG.num_comment, CFG.embedding_size, 1])
+        print("Start a batch...")
         _ = sess.run(
             train_op,
             feed_dict = {input_X : X, input_Y : Y, input_p : 0.5, input_L : _L}
