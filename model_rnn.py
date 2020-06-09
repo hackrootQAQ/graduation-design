@@ -4,8 +4,8 @@ import pickle
 import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-batch_size = 64
-max_length = 250
+batch_size = 128
+max_length = 25
 
 class RnnModel(object):
 
