@@ -86,8 +86,8 @@ if __name__ == "__main__":
     conv3_x_2 = res_block(conv3_x_1, 64, 64, "conv3_x_2")
     
     #3 * 3
-    conv4_x_1= res_block(conv3_x_2, 64, 64, "conv4_x_1", downsize = True, attention = CFG.attention)
-    conv4_x_2 = res_block(conv4_x_1, 64, 64, "conv4_x_2")
+    conv4_x_1= res_block(conv3_x_2, 64, 256, "conv4_x_1", downsize = True, attention = CFG.attention)
+    conv4_x_2 = res_block(conv4_x_1, 64, 256, "conv4_x_2")
 
     conv4_x_p = tf.nn.avg_pool(value = conv4_x_2,
         ksize = [1, 3, 3, 1],
@@ -95,8 +95,8 @@ if __name__ == "__main__":
         padding = "SAME"
     )
 
-    ret = tf.reshape(conv4_x_p, [-1, 64])
-    W_f1 = init_w([64, 12], name = "W_f1")
+    ret = tf.reshape(conv4_x_p, [-1, 256])
+    W_f1 = init_w([256, 12], name = "W_f1")
     b_f1 = init_b([12], name = "b_f1")
     out_ = tf.add(tf.matmul(ret, W_f1), b_f1)
 
