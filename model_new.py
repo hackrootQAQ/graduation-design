@@ -107,7 +107,7 @@ if __name__ == "__main__":
         padding = "SAME"
     )
 
-    ret = tf.reshape(conv3_x_p, [-1, 768, 256])
+    ret = tf.reshape(conv4_x_p, [-1, 768, 256])
     W_f1 = init_w([256, 1], name = "W_f1")
     b_f1 = init_b([768], name = "b_f1")
     f1 = tf.add(tf.reshape(reshape_matmul(ret, W_f1), [-1, 768]), b_f1)
