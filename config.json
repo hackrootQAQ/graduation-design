@@ -1,7 +1,7 @@
 {
-    "batch_size": 128,
+    "batch_size": 64,
     "embedding_size": 768,
-    "num_comment": 1024,
+    "num_comment": 768,
     "num_class": 12,
     "lr_base": 0.001,
     "lr_decay": 0.98,

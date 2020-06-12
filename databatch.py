@@ -148,7 +148,7 @@ def cut_two_parts(test_size):
     return D[:-test_size], D[-test_size:] 
 """
 
-sz = 1024
+sz = 768
 """
 def get_batch(batch_size, D = None):
     now = 0
