@@ -165,7 +165,7 @@ if __name__ == "__main__":
         if max(ret_acc[-max(len(ret_acc), 600):]) < max_acc: break
 
         #if min(ret_loss[-min(len(ret_loss), 500):]) > min_loss or min_loss == l:
-        if max(ret_acc[-max(len(ret_acc), 500):]) < max_acc or max_acc == a:
+        if (max(ret_acc[-max(len(ret_acc), 500):]) < max_acc or max_acc == a) and step > 100:
             S_test = databatch.get_mean_batch(batch_size = CFG.batch_size, D = test_D)
             predict_a, predict_l = 0, 0
             for i in range(len(test_D) // CFG.batch_size):
